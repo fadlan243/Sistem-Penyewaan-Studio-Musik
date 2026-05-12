@@ -80,5 +80,31 @@ namespace Sistem_Penyewaan_Studio_Musik
             mode = "edit";
         }
 
+        private void LoadStudioCombo()
+        {
+            try
+            {
+                conn.Open();
+                string query = "SELECT id_studio, nama_studio FROM tbl_studio WHERE status = 'aktif' ORDER BY nama_studio";
+                SqlDataAdapter da = new SqlDataAdapter(query, conn);
+                DataTable dtStudio = new DataTable();
+                da.Fill(dtStudio);
+                conn.Close();
+
+                cbStudioFilter.DataSource = dtStudio;
+                cbStudioFilter.DisplayMember = "nama_studio";
+                cbStudioFilter.ValueMember = "id_studio";
+
+                cbStudio.DataSource = dtStudio.Copy();
+                cbStudio.DisplayMember = "nama_studio";
+                cbStudio.ValueMember = "id_studio";
+
+                if (cbStudioFilter.Items.Count > 0)
+                    cbStudioFilter.SelectedIndex = -1;
+            }
+            catch (Exception ex) { if (conn.State == ConnectionState.Open) conn.Close(); MessageBox.Show("Error LoadStudio: " + ex.Message); }
+        }
+
+        
     }
 }
