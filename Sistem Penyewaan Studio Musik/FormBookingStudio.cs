@@ -211,5 +211,50 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
+        // ==================== LOAD DETAIL JADWAL ====================
+        private void LoadDetailJadwal(int id_jadwal)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    conn.Open();
+                    string query = @"SELECT s.nama_studio, j.tanggal, j.jam_mulai, j.jam_selesai, 
+                                            s.harga_per_jam, 
+                                            DATEDIFF(MINUTE, j.jam_mulai, j.jam_selesai) / 60 AS durasi
+                                     FROM tbl_jadwal j
+                                     JOIN tbl_studio s ON j.id_studio = s.id_studio
+                                     WHERE j.id_jadwal = @id";
+
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@id", id_jadwal);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            cbStudio.Text = reader["nama_studio"].ToString();
+                            dtpTanggal.Value = Convert.ToDateTime(reader["tanggal"]);
+                            dtpJamMulai.Value = DateTime.Today.Add(((TimeSpan)reader["jam_mulai"]));
+                            dtpJamSelesai.Value = DateTime.Today.Add(((TimeSpan)reader["jam_selesai"]));
+                            txtHargaPerJam.Text = "Rp " + Convert.ToDecimal(reader["harga_per_jam"]).ToString("N0");
+
+                            int durasi = Convert.ToInt32(reader["durasi"]);
+                            decimal hargaPerJam = Convert.ToDecimal(reader["harga_per_jam"]);
+                            decimal totalHarga = durasi * hargaPerJam;
+
+                            txtDurasi.Text = durasi + " Jam";
+                            txtTotalHarga.Text = "Rp " + totalHarga.ToString("N0");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error LoadDetailJadwal: " + ex.Message);
+            }
+        }
+
+
     }
 }
