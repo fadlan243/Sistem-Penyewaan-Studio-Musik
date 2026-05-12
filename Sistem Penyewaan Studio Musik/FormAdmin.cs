@@ -99,6 +99,15 @@ namespace Sistem_Penyewaan_Studio_Musik
             formKelolaJadwal.ShowDialog();
         }
 
-       
+        private void FormAdmin_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnPembayaran_Click(object sender, EventArgs e)
+        {
+            FormPembayaran formPembayaran = new FormPembayaran(this.id_admin, this.nama_admin);
+            formPembayaran.ShowDialog();
+        }
     }
 }
