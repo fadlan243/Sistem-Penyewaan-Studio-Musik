@@ -149,5 +149,67 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
+        // ==================== LOAD RIWAYAT BOOKING (UCP 2: PAKAI VIEW & SP) ====================
+        private void LoadRiwayatBooking()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    conn.Open();
+                    // ✅ UCP 2: Gunakan Stored Procedure sp_SearchRiwayatBooking
+                    SqlCommand cmd = new SqlCommand("sp_SearchRiwayatBooking", conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@id_pelanggan", id_pelanggan);
+                    cmd.Parameters.AddWithValue("@status", "semua");
+
+                    SqlDataAdapter da = new SqlDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+                    conn.Close();
+
+                    dgvRiwayatBooking.DataSource = dt;
+                }
+
+                // Atur header kolom
+                if (dgvRiwayatBooking.Columns.Count > 0)
+                {
+                    if (dgvRiwayatBooking.Columns.Contains("id_booking"))
+                        dgvRiwayatBooking.Columns["id_booking"].HeaderText = "ID";
+                    if (dgvRiwayatBooking.Columns.Contains("tanggal_booking"))
+                    {
+                        dgvRiwayatBooking.Columns["tanggal_booking"].HeaderText = "Tanggal Booking";
+                        dgvRiwayatBooking.Columns["tanggal_booking"].DefaultCellStyle.Format = "dd/MM/yyyy HH:mm";
+                    }
+                    if (dgvRiwayatBooking.Columns.Contains("nama_studio"))
+                        dgvRiwayatBooking.Columns["nama_studio"].HeaderText = "Studio";
+                    if (dgvRiwayatBooking.Columns.Contains("durasi_jam"))
+                        dgvRiwayatBooking.Columns["durasi_jam"].HeaderText = "Durasi (Jam)";
+                    if (dgvRiwayatBooking.Columns.Contains("total_harga"))
+                    {
+                        dgvRiwayatBooking.Columns["total_harga"].HeaderText = "Total Harga";
+                        dgvRiwayatBooking.Columns["total_harga"].DefaultCellStyle.Format = "N0";
+                    }
+                    if (dgvRiwayatBooking.Columns.Contains("status"))
+                        dgvRiwayatBooking.Columns["status"].HeaderText = "Status";
+                }
+
+                // Tambah kolom button Batalkan
+                if (dgvRiwayatBooking.Columns["btnBatalkan"] == null)
+                {
+                    DataGridViewButtonColumn btnBatalkan = new DataGridViewButtonColumn();
+                    btnBatalkan.Name = "btnBatalkan";
+                    btnBatalkan.HeaderText = "Aksi";
+                    btnBatalkan.Text = "❌ Batalkan";
+                    btnBatalkan.UseColumnTextForButtonValue = true;
+                    dgvRiwayatBooking.Columns.Add(btnBatalkan);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error LoadRiwayatBooking: " + ex.Message);
+            }
+        }
+
     }
 }
