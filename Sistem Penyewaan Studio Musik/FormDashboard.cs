@@ -11,6 +11,9 @@ using System.Windows.Forms;
 
 namespace Sistem_Penyewaan_Studio_Musik
 {
-   
-    
+    public partial class FormDashboard : Form
+    {
+        SqlConnection conn = new SqlConnection("Data Source=FADLANNASRIZAL\\FADLAN;Initial Catalog=StudioMusik_DB;Integrated Security=True");
+        
+    }
 }
