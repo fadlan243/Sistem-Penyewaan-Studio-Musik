@@ -36,6 +36,49 @@ namespace Sistem_Penyewaan_Studio_Musik
             bindingSourceJadwal.CurrentChanged += BindingSourceJadwal_CurrentChanged;
         }
 
-    
+        private void BindingSourceJadwal_CurrentChanged(object sender, EventArgs e)
+        {
+            DataRowView row = bindingSourceJadwal.Current as DataRowView;
+            if (row == null) return;
+
+            selectedIdJadwal = Convert.ToInt32(row["id_jadwal"]);
+
+            // Set ComboBox Studio
+            string studioName = row["nama_studio"].ToString();
+            for (int i = 0; i < cbStudio.Items.Count; i++)
+            {
+                if (cbStudio.Items[i].ToString() == studioName)
+                {
+                    cbStudio.SelectedIndex = i;
+                    break;
+                }
+            }
+
+            // ✅ PERBAIKAN: Set DateTimePicker dengan benar
+            dtpTanggal.Value = Convert.ToDateTime(row["tanggal"]);
+
+            // ✅ PERBAIKAN: Parse TimeSpan ke DateTime
+            TimeSpan jamMulai = TimeSpan.Parse(row["jam_mulai"].ToString());
+            TimeSpan jamSelesai = TimeSpan.Parse(row["jam_selesai"].ToString());
+
+            dtpJamMulai.Value = DateTime.Today.Add(jamMulai);
+            dtpJamSelesai.Value = DateTime.Today.Add(jamSelesai);
+
+            // Set Status ComboBox
+            string status = row["status"].ToString();
+            if (status == "tersedia") cbStatus.SelectedIndex = 0;
+            else if (status == "dipesan") cbStatus.SelectedIndex = 1;
+            else cbStatus.SelectedIndex = 2;
+
+            txtKeterangan.Text = row["keterangan"]?.ToString() ?? "";
+
+            btnEdit.Enabled = true;
+            btnHapus.Enabled = true;
+            btnStatusTersedia.Enabled = true;
+            btnStatusDitutup.Enabled = true;
+            btnSimpan.Text = "✏️ Update";
+            mode = "edit";
+        }
+
     }
 }
