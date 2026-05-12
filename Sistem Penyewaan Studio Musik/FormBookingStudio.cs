@@ -447,6 +447,11 @@ namespace Sistem_Penyewaan_Studio_Musik
             this.Close();
         }
 
+        private void btnBooking_Click(object sender, EventArgs e)
+        {
+            BuatBooking();
+        }
+
         
     }
 }
