@@ -255,6 +255,62 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
+        // ==================== UCP 2: MEMBUAT BOOKING PAKAI SP ====================
+        private void BuatBooking()
+        {
+            if (selectedIdJadwal == 0)
+            {
+                MessageBox.Show("Pilih jadwal terlebih dahulu!", "Peringatan",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string catatan = txtCatatan.Text;
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    conn.Open();
+
+                    // ✅ UCP 2: Gunakan Stored Procedure sp_InsertBooking
+                    SqlCommand cmd = new SqlCommand("sp_InsertBooking", conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@id_pelanggan", id_pelanggan);
+                    cmd.Parameters.AddWithValue("@id_jadwal", selectedIdJadwal);
+                    cmd.Parameters.AddWithValue("@catatan", catatan);
+
+                    SqlParameter paramId = new SqlParameter("@new_id", SqlDbType.Int);
+                    paramId.Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add(paramId);
+
+                    SqlParameter paramPesan = new SqlParameter("@pesan", SqlDbType.VarChar, 255);
+                    paramPesan.Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add(paramPesan);
+
+                    cmd.ExecuteNonQuery();
+
+                    string pesan = paramPesan.Value.ToString();
+                    MessageBox.Show(pesan, pesan.StartsWith("SUKSES") ? "Sukses" : "Peringatan",
+                        MessageBoxButtons.OK, pesan.StartsWith("SUKSES") ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
+
+                    if (pesan.StartsWith("SUKSES"))
+                    {
+                        selectedIdJadwal = 0;
+                        txtCatatan.Clear();
+                        ClearDetailJadwal();
+                        LoadJadwalTersedia();
+                        LoadRiwayatBooking();
+                    }
+                    conn.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error BuatBooking: " + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
     }
 }
