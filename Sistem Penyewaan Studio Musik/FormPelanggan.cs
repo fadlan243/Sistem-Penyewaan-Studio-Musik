@@ -74,6 +74,16 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
+        private void btnProfil_Click(object sender, EventArgs e)
+        {
+            // Buka Form Profil Pelanggan
+            FormProfilPelanggan formProfil = new FormProfilPelanggan(id_pelanggan, nama_pelanggan, username_pelanggan);
+            formProfil.ShowDialog();
+
+            // Refresh nama setelah edit profil (jika ada perubahan)
+            LoadUpdatedProfile();
+        }
+
 
     }
 }
