@@ -15,6 +15,38 @@ namespace Sistem_Penyewaan_Studio_Musik
     {
         SqlConnection conn = new SqlConnection("Data Source=FADLANNASRIZAL\\FADLAN;Initial Catalog=StudioMusik_DB;Integrated Security=True");
 
+        private int id_admin;
+        private string nama_admin;
+
+        public FormAdmin(int id_admin = 1, string nama_admin = "Admin")
+        {
+            InitializeComponent();
+            // Inisialisasi variabel
+            this.id_admin = id_admin;
+            this.nama_admin = nama_admin;
+
+            // Tampilkan nama admin di label (pastikan label lblAdmin ada di Designer)
+            if (lblAdmin != null)
+            {
+                lblAdmin.Text = $"Halo, {nama_admin}!";
+            }
+
+            // Panggil styling
+        }
+
+        private void btnLogout_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Apakah Anda yakin ingin logout?", "Konfirmasi Logout",
+            MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                FormLogin login = new FormLogin();
+                login.Show();
+                this.Close();
+            }
+        }
+
        
     }
 }
