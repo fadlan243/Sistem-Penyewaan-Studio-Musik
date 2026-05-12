@@ -80,6 +80,44 @@ namespace Sistem_Penyewaan_Studio_Musik
             mode = "edit";
         }
 
+        // ==================== LOAD DATA ====================
+        private void LoadData(string search = "")
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand("sp_SearchStudio", conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@keyword", search);
+                    cmd.Parameters.AddWithValue("@status", "semua");
+                    cmd.Parameters.AddWithValue("@sort_by", "nama");
+
+                    SqlDataAdapter da = new SqlDataAdapter(cmd);
+                    dtStudio = new DataTable();
+                    da.Fill(dtStudio);
+                    conn.Close();
+                }
+
+                // Isi BindingSource
+                bindingSource2.DataSource = dtStudio;
+                dgvStudio.DataSource = bindingSource2;
+
+                // ✅ Panggil FormatKolom SETELAH DataGridView terisi
+                FormatKolom();
+
+                // Update BindingNavigator
+                bindingNavigator1.Enabled = (dtStudio.Rows.Count > 0);
+
+                Console.WriteLine($"Data loaded: {dtStudio.Rows.Count} rows");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error LoadData: " + ex.Message);
+            }
+        }
+
         
     }
 }
