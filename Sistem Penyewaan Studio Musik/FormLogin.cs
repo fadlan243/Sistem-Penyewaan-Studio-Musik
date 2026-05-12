@@ -21,6 +21,39 @@ namespace Sistem_Penyewaan_Studio_Musik
             InitializeComponent();
         }
 
-     
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            // TextBox untuk username - tidak perlu aksi khusus
+        }
+
+        private void lblTitle_Click(object sender, EventArgs e)
+        {
+            // Efek saat judul diklik - berubah warna oranye sebentar
+            lblTitle.ForeColor = Color.FromArgb(255, 128, 0);
+            Timer timer = new Timer();
+            timer.Interval = 500;
+            timer.Tick += (s, args) =>
+            {
+                lblTitle.ForeColor = Color.Black;
+                timer.Stop();
+            };
+            timer.Start();
+        }
+
+        private void lblUserType_Click(object sender, EventArgs e)
+        {
+            // Memindahkan fokus ke ComboBox ketika label diklik
+            comboBox1.Focus();
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Opsional: Menampilkan pesan welcome sesuai pilihan
+            string selectedUser = comboBox1.SelectedItem?.ToString() ?? "Pelanggan";
+            // Bisa ditambahkan efek suara atau perubahan background
+            System.Diagnostics.Debug.WriteLine($"User memilih: {selectedUser}");
+        }
+
+        
     }
 }
