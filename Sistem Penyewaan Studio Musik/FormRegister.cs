@@ -101,5 +101,170 @@ namespace Sistem_Penyewaan_Studio_Musik
             txtKonfPass.Tag = "Ketik ulang password";
         }
 
+        private void txtNama_TextChanged(object sender, EventArgs e)
+        {
+            // Event ketika teks Nama berubah
+        }
+
+        private void txtUsername_TextChanged(object sender, EventArgs e)
+        {
+            // Event ketika teks Username berubah
+        }
+
+        private void txtTelp_TextChanged(object sender, EventArgs e)
+        {
+            // Event ketika teks No Telepon berubah
+        }
+
+        private void txtEmail_TextChanged(object sender, EventArgs e)
+        {
+            // Event ketika teks Email berubah
+        }
+
+        private void txtAlamat_TextChanged(object sender, EventArgs e)
+        {
+            // Event ketika teks Alamat berubah
+        }
+
+        private void txtPassword_TextChanged(object sender, EventArgs e)
+        {
+            // Event ketika teks Password berubah
+            // Bisa ditambahkan validasi real-time untuk kekuatan password
+        }
+
+        private void txtKonfPass_TextChanged(object sender, EventArgs e)
+        {
+            // Event ketika teks Konfirmasi Password berubah
+        }
+
+        private void btnRegister_Click(object sender, EventArgs e)
+        {
+            // Validasi input (tetap sama seperti sebelumnya)
+            if (string.IsNullOrWhiteSpace(txtNama.Text))
+            {
+                MessageBox.Show("Nama Lengkap tidak boleh kosong!", "Validasi Gagal", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtNama.Focus(); return;
+            }
+            if (string.IsNullOrWhiteSpace(txtUsername.Text) || txtUsername.Text.Length < 3)
+            {
+                MessageBox.Show("Username minimal 3 karakter!", "Validasi Gagal", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtUsername.Focus(); return;
+            }
+            if (string.IsNullOrWhiteSpace(txtTelp.Text))
+            {
+                MessageBox.Show("Nomor Telepon tidak boleh kosong!", "Validasi Gagal", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtTelp.Focus(); return;
+            }
+            if (string.IsNullOrWhiteSpace(txtEmail.Text) || !IsValidEmail(txtEmail.Text))
+            {
+                MessageBox.Show("Format email tidak valid!", "Validasi Gagal", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtEmail.Focus(); return;
+            }
+            if (string.IsNullOrWhiteSpace(txtPassword.Text) || txtPassword.Text.Length < 6)
+            {
+                MessageBox.Show("Password minimal 6 karakter!", "Validasi Gagal", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtPassword.Focus(); return;
+            }
+            if (txtPassword.Text != txtKonfPass.Text)
+            {
+                MessageBox.Show("Konfirmasi Password tidak cocok!", "Validasi Gagal", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtKonfPass.Focus(); return;
+            }
+
+            DialogResult result = MessageBox.Show(
+                $"Nama: {txtNama.Text}\nUsername: {txtUsername.Text}\nEmail: {txtEmail.Text}\n\nSimpan data?",
+                "Konfirmasi Registrasi", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes) return;
+
+            try
+            {
+                conn.Open();
+
+                // Cek username sudah ada belum
+                string cekQuery = "SELECT COUNT(*) FROM pelanggan WHERE Username = @Username";
+                SqlCommand cekCmd = new SqlCommand(cekQuery, conn);
+                cekCmd.Parameters.AddWithValue("@Username", txtUsername.Text);
+                int count = (int)cekCmd.ExecuteScalar();
+
+                if (count > 0)
+                {
+                    MessageBox.Show("Username sudah digunakan! Pilih username lain.", "Gagal",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    conn.Close();
+                    txtUsername.Focus();
+                    return;
+                }
+
+                // Insert ke tabel users dulu
+                string queryUsers = "INSERT INTO users (Username, Email, Password, role) " +
+                                    "VALUES (@Username, @Email, @Password, 'pelanggan'); " +
+                                    "SELECT SCOPE_IDENTITY();";
+                SqlCommand cmdUsers = new SqlCommand(queryUsers, conn);
+                cmdUsers.Parameters.AddWithValue("@Username", txtUsername.Text);
+                cmdUsers.Parameters.AddWithValue("@Email", txtEmail.Text);
+                cmdUsers.Parameters.AddWithValue("@Password", txtPassword.Text);
+                int newIdUser = Convert.ToInt32(cmdUsers.ExecuteScalar());
+
+                // Insert ke tabel pelanggan
+                string queryPelanggan = "INSERT INTO pelanggan (id_user, Nama, Username, NoTelp, Email, Alamat, Password) " +
+                                        "VALUES (@id_user, @Nama, @Username, @NoTelp, @Email, @Alamat, @Password)";
+                SqlCommand cmdPelanggan = new SqlCommand(queryPelanggan, conn);
+                cmdPelanggan.Parameters.AddWithValue("@id_user", newIdUser);
+                cmdPelanggan.Parameters.AddWithValue("@Nama", txtNama.Text);
+                cmdPelanggan.Parameters.AddWithValue("@Username", txtUsername.Text);
+                cmdPelanggan.Parameters.AddWithValue("@NoTelp", txtTelp.Text);
+                cmdPelanggan.Parameters.AddWithValue("@Email", txtEmail.Text);
+                cmdPelanggan.Parameters.AddWithValue("@Alamat", txtAlamat.Text);
+                cmdPelanggan.Parameters.AddWithValue("@Password", txtPassword.Text);
+                cmdPelanggan.ExecuteNonQuery();
+
+                conn.Close();
+
+                MessageBox.Show("Registrasi Berhasil! Silakan login.", "Sukses",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                FormLogin formLogin = new FormLogin();
+                formLogin.Show();
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                if (conn.State == ConnectionState.Open) conn.Close();
+                MessageBox.Show("Terjadi kesalahan: " + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void SaveRegistrationData()
+        {
+            // Method untuk menyimpan data ke database
+            // Contoh sementara - ganti dengan implementasi database sebenarnya
+
+            // Simulasi penyimpanan
+            MessageBox.Show("Registrasi Berhasil!\n\nSilakan login menggunakan akun Anda.",
+                "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            // Buka form login
+            FormLogin formLogin = new FormLogin();
+            formLogin.Show();
+            this.Close();
+        }
+
+
+        private void btnKembali_Click(object sender, EventArgs e)
+        {
+            // Konfirmasi sebelum kembali
+            DialogResult result = MessageBox.Show("Apakah Anda yakin ingin kembali?\nData yang belum disimpan akan hilang.",
+                "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                FormDashboard dashboard = new FormDashboard();
+                dashboard.Show();
+                this.Close();
+            }
+        }
+
     }
 }
