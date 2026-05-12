@@ -287,3 +287,5 @@ UPDATE tbl_booking SET status = 'menunggu' WHERE id_booking = 1
 INSERT INTO tbl_booking (id_pelanggan, id_jadwal, durasi_jam, total_harga, status, tanggal_booking, catatan)
 VALUES (2, 3, 1, 150000, 'menunggu', GETDATE(), 'Test booking awor')
 
+
+SELECT * FROM pelanggan;

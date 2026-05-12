@@ -32,6 +32,7 @@
             this.btnLogin = new System.Windows.Forms.Button();
             this.btnRegister = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnSqlInjectionDemo = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,7 +56,7 @@
             this.btnLogin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnLogin.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnLogin.ForeColor = System.Drawing.Color.OrangeRed;
-            this.btnLogin.Location = new System.Drawing.Point(290, 496);
+            this.btnLogin.Location = new System.Drawing.Point(288, 427);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(122, 57);
             this.btnLogin.TabIndex = 1;
@@ -71,7 +72,7 @@
             this.btnRegister.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRegister.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnRegister.ForeColor = System.Drawing.Color.OrangeRed;
-            this.btnRegister.Location = new System.Drawing.Point(524, 496);
+            this.btnRegister.Location = new System.Drawing.Point(518, 427);
             this.btnRegister.Name = "btnRegister";
             this.btnRegister.Size = new System.Drawing.Size(122, 57);
             this.btnRegister.TabIndex = 2;
@@ -88,6 +89,22 @@
             this.panel1.TabIndex = 3;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
+            // btnSqlInjectionDemo
+            // 
+            this.btnSqlInjectionDemo.BackColor = System.Drawing.Color.Black;
+            this.btnSqlInjectionDemo.FlatAppearance.BorderColor = System.Drawing.Color.DarkRed;
+            this.btnSqlInjectionDemo.FlatAppearance.BorderSize = 3;
+            this.btnSqlInjectionDemo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSqlInjectionDemo.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSqlInjectionDemo.ForeColor = System.Drawing.Color.OrangeRed;
+            this.btnSqlInjectionDemo.Location = new System.Drawing.Point(309, 500);
+            this.btnSqlInjectionDemo.Name = "btnSqlInjectionDemo";
+            this.btnSqlInjectionDemo.Size = new System.Drawing.Size(306, 57);
+            this.btnSqlInjectionDemo.TabIndex = 4;
+            this.btnSqlInjectionDemo.Text = "🔓 SQL Injection Demo";
+            this.btnSqlInjectionDemo.UseVisualStyleBackColor = false;
+            this.btnSqlInjectionDemo.Click += new System.EventHandler(this.btnSqlInjectionDemo_Click);
+            // 
             // FormDashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -96,6 +113,7 @@
             this.BackgroundImage = global::Sistem_Penyewaan_Studio_Musik.Properties.Resources.ChatGPT_Image_6_Mei_2026__22_38_38;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ClientSize = new System.Drawing.Size(913, 604);
+            this.Controls.Add(this.btnSqlInjectionDemo);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnRegister);
             this.Controls.Add(this.btnLogin);
@@ -114,5 +132,6 @@
         private System.Windows.Forms.Button btnLogin;
         private System.Windows.Forms.Button btnRegister;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button btnSqlInjectionDemo;
     }
 }

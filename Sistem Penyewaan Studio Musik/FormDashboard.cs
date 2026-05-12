@@ -73,5 +73,11 @@ namespace Sistem_Penyewaan_Studio_Musik
                     ((Panel)sender).Width, ((Panel)sender).Height - 1);
             }
         }
+
+        private void btnSqlInjectionDemo_Click(object sender, EventArgs e)
+        {
+            FormLoginRentan form = new FormLoginRentan();
+            form.ShowDialog();
+        }
     }
 }

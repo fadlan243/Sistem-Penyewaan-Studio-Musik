@@ -1,19 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Sistem_Penyewaan_Studio_Musik
 {
     public partial class FormBookingStudio : Form
     {
-        // ✅ Hanya simpan string koneksi, BUKAN objek koneksi global
         private readonly string connString = "Data Source=FADLANNASRIZAL\\FADLAN;Initial Catalog=StudioMusik_DB;Integrated Security=True";
 
         private int id_pelanggan;
@@ -94,7 +88,7 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
-        // ==================== LOAD JADWAL TERSEDIA ====================
+        // ==================== LOAD JADWAL TERSEDIA (UCP 2: PAKAI VIEW) ====================
         private void LoadJadwalTersedia()
         {
             try
@@ -102,18 +96,16 @@ namespace Sistem_Penyewaan_Studio_Musik
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
                     conn.Open();
-                    string query = @"SELECT j.id_jadwal, s.nama_studio, j.tanggal, 
-                                            j.jam_mulai, j.jam_selesai, s.harga_per_jam,
-                                            DATEDIFF(HOUR, j.jam_mulai, j.jam_selesai) as durasi
-                                     FROM tbl_jadwal j
-                                     JOIN tbl_studio s ON j.id_studio = s.id_studio
-                                     WHERE j.status = 'tersedia'
-                                     AND j.tanggal >= CAST(GETDATE() AS DATE)
-                                     ORDER BY j.tanggal, j.jam_mulai";
+                    // ✅ UCP 2: Gunakan VIEW vw_JadwalTersedia
+                    string query = @"SELECT id_jadwal, nama_studio, tanggal, jam_mulai, jam_selesai, 
+                                            harga_per_jam, durasi_jam AS durasi
+                                     FROM vw_JadwalTersedia
+                                     ORDER BY tanggal, jam_mulai";
 
                     SqlDataAdapter da = new SqlDataAdapter(query, conn);
                     DataTable dt = new DataTable();
                     da.Fill(dt);
+                    conn.Close();
 
                     dgvJadwalTersedia.DataSource = dt;
                 }
@@ -140,6 +132,7 @@ namespace Sistem_Penyewaan_Studio_Musik
                         dgvJadwalTersedia.Columns["durasi"].HeaderText = "Durasi (Jam)";
                 }
 
+                // Tambah kolom button Booking
                 if (dgvJadwalTersedia.Columns["btnBooking"] == null)
                 {
                     DataGridViewButtonColumn btnBooking = new DataGridViewButtonColumn();
@@ -156,7 +149,7 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
-        // ==================== LOAD RIWAYAT BOOKING ====================
+        // ==================== LOAD RIWAYAT BOOKING (UCP 2: PAKAI VIEW & SP) ====================
         private void LoadRiwayatBooking()
         {
             try
@@ -164,18 +157,16 @@ namespace Sistem_Penyewaan_Studio_Musik
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
                     conn.Open();
-                    string query = @"SELECT b.id_booking, b.tanggal_booking, s.nama_studio, 
-                                            b.durasi_jam, b.total_harga, b.status
-                                     FROM tbl_booking b
-                                     JOIN tbl_jadwal j ON b.id_jadwal = j.id_jadwal
-                                     JOIN tbl_studio s ON j.id_studio = s.id_studio
-                                     WHERE b.id_pelanggan = @id_pelanggan
-                                     ORDER BY b.tanggal_booking DESC";
+                    // ✅ UCP 2: Gunakan Stored Procedure sp_SearchRiwayatBooking
+                    SqlCommand cmd = new SqlCommand("sp_SearchRiwayatBooking", conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@id_pelanggan", id_pelanggan);
+                    cmd.Parameters.AddWithValue("@status", "semua");
 
-                    SqlDataAdapter da = new SqlDataAdapter(query, conn);
-                    da.SelectCommand.Parameters.AddWithValue("@id_pelanggan", id_pelanggan);
+                    SqlDataAdapter da = new SqlDataAdapter(cmd);
                     DataTable dt = new DataTable();
                     da.Fill(dt);
+                    conn.Close();
 
                     dgvRiwayatBooking.DataSource = dt;
                 }
@@ -203,6 +194,7 @@ namespace Sistem_Penyewaan_Studio_Musik
                         dgvRiwayatBooking.Columns["status"].HeaderText = "Status";
                 }
 
+                // Tambah kolom button Batalkan
                 if (dgvRiwayatBooking.Columns["btnBatalkan"] == null)
                 {
                     DataGridViewButtonColumn btnBatalkan = new DataGridViewButtonColumn();
@@ -228,11 +220,11 @@ namespace Sistem_Penyewaan_Studio_Musik
                 {
                     conn.Open();
                     string query = @"SELECT s.nama_studio, j.tanggal, j.jam_mulai, j.jam_selesai, 
-                                    s.harga_per_jam, 
-                                    DATEDIFF(HOUR, j.jam_mulai, j.jam_selesai) as durasi
-                             FROM tbl_jadwal j
-                             JOIN tbl_studio s ON j.id_studio = s.id_studio
-                             WHERE j.id_jadwal = @id";
+                                            s.harga_per_jam, 
+                                            DATEDIFF(MINUTE, j.jam_mulai, j.jam_selesai) / 60 AS durasi
+                                     FROM tbl_jadwal j
+                                     JOIN tbl_studio s ON j.id_studio = s.id_studio
+                                     WHERE j.id_jadwal = @id";
 
                     SqlCommand cmd = new SqlCommand(query, conn);
                     cmd.Parameters.AddWithValue("@id", id_jadwal);
@@ -263,7 +255,7 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
-        // ==================== MEMBUAT BOOKING BARU ====================
+        // ==================== UCP 2: MEMBUAT BOOKING PAKAI SP ====================
         private void BuatBooking()
         {
             if (selectedIdJadwal == 0)
@@ -281,54 +273,37 @@ namespace Sistem_Penyewaan_Studio_Musik
                 {
                     conn.Open();
 
-                    // Hitung total harga dan durasi
-                    string queryJadwal = @"SELECT s.harga_per_jam, DATEDIFF(HOUR, j.jam_mulai, j.jam_selesai) as durasi 
-                                           FROM tbl_jadwal j 
-                                           JOIN tbl_studio s ON j.id_studio = s.id_studio 
-                                           WHERE j.id_jadwal = @id";
-                    SqlCommand cmdJadwal = new SqlCommand(queryJadwal, conn);
-                    cmdJadwal.Parameters.AddWithValue("@id", selectedIdJadwal);
-
-                    decimal hargaPerJam = 0;
-                    int durasi = 0;
-
-                    using (SqlDataReader reader = cmdJadwal.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            hargaPerJam = Convert.ToDecimal(reader["harga_per_jam"]);
-                            durasi = Convert.ToInt32(reader["durasi"]);
-                        }
-                    }
-
-                    decimal totalHarga = durasi * hargaPerJam;
-
-                    // Insert booking
-                    string query = @"INSERT INTO tbl_booking (id_pelanggan, id_jadwal, durasi_jam, total_harga, status, catatan) 
-                             VALUES (@id_pelanggan, @id_jadwal, @durasi, @total_harga, 'menunggu', @catatan)";
-                    SqlCommand cmd = new SqlCommand(query, conn);
+                    // ✅ UCP 2: Gunakan Stored Procedure sp_InsertBooking
+                    SqlCommand cmd = new SqlCommand("sp_InsertBooking", conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@id_pelanggan", id_pelanggan);
                     cmd.Parameters.AddWithValue("@id_jadwal", selectedIdJadwal);
-                    cmd.Parameters.AddWithValue("@durasi", durasi);
-                    cmd.Parameters.AddWithValue("@total_harga", totalHarga);
                     cmd.Parameters.AddWithValue("@catatan", catatan);
+
+                    SqlParameter paramId = new SqlParameter("@new_id", SqlDbType.Int);
+                    paramId.Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add(paramId);
+
+                    SqlParameter paramPesan = new SqlParameter("@pesan", SqlDbType.VarChar, 255);
+                    paramPesan.Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add(paramPesan);
+
                     cmd.ExecuteNonQuery();
 
-                    // Update status jadwal menjadi 'dipesan'
-                    string updateJadwal = "UPDATE tbl_jadwal SET status = 'dipesan' WHERE id_jadwal = @id";
-                    SqlCommand cmdUpdate = new SqlCommand(updateJadwal, conn);
-                    cmdUpdate.Parameters.AddWithValue("@id", selectedIdJadwal);
-                    cmdUpdate.ExecuteNonQuery();
+                    string pesan = paramPesan.Value.ToString();
+                    MessageBox.Show(pesan, pesan.StartsWith("SUKSES") ? "Sukses" : "Peringatan",
+                        MessageBoxButtons.OK, pesan.StartsWith("SUKSES") ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
+
+                    if (pesan.StartsWith("SUKSES"))
+                    {
+                        selectedIdJadwal = 0;
+                        txtCatatan.Clear();
+                        ClearDetailJadwal();
+                        LoadJadwalTersedia();
+                        LoadRiwayatBooking();
+                    }
+                    conn.Close();
                 }
-
-                MessageBox.Show("Booking berhasil dibuat! Menunggu konfirmasi admin.", "Sukses",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                selectedIdJadwal = 0;
-                txtCatatan.Clear();
-                ClearDetailJadwal();
-                LoadJadwalTersedia();
-                LoadRiwayatBooking();
             }
             catch (Exception ex)
             {
@@ -337,7 +312,7 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
-        // ==================== MEMBATALKAN BOOKING ====================
+        // ==================== UCP 2: MEMBATALKAN BOOKING PAKAI SP ====================
         private void BatalkanBooking(int id_booking)
         {
             try
@@ -346,32 +321,31 @@ namespace Sistem_Penyewaan_Studio_Musik
                 {
                     conn.Open();
 
-                    // Ambil id_jadwal dari booking yang akan dibatalkan
-                    string queryGetJadwal = "SELECT id_jadwal FROM tbl_booking WHERE id_booking = @id";
-                    SqlCommand cmdGet = new SqlCommand(queryGetJadwal, conn);
-                    cmdGet.Parameters.AddWithValue("@id", id_booking);
-                    int id_jadwal = Convert.ToInt32(cmdGet.ExecuteScalar());
+                    // ✅ UCP 2: Gunakan Stored Procedure sp_CancelBooking
+                    SqlCommand cmd = new SqlCommand("sp_CancelBooking", conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@id_booking", id_booking);
+                    cmd.Parameters.AddWithValue("@id_pelanggan", id_pelanggan);
 
-                    // Update status booking menjadi 'dibatalkan'
-                    string query = "UPDATE tbl_booking SET status = 'ditolak' WHERE id_booking = @id";
-                    SqlCommand cmd = new SqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@id", id_booking);
+                    SqlParameter paramPesan = new SqlParameter("@pesan", SqlDbType.VarChar, 255);
+                    paramPesan.Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add(paramPesan);
+
                     cmd.ExecuteNonQuery();
 
-                    // Update status jadwal kembali menjadi 'tersedia'
-                    string updateJadwal = "UPDATE tbl_jadwal SET status = 'tersedia' WHERE id_jadwal = @id";
-                    SqlCommand cmdUpdate = new SqlCommand(updateJadwal, conn);
-                    cmdUpdate.Parameters.AddWithValue("@id", id_jadwal);
-                    cmdUpdate.ExecuteNonQuery();
+                    string pesan = paramPesan.Value.ToString();
+                    MessageBox.Show(pesan, pesan.StartsWith("SUKSES") ? "Sukses" : "Peringatan",
+                        MessageBoxButtons.OK, pesan.StartsWith("SUKSES") ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
+
+                    if (pesan.StartsWith("SUKSES"))
+                    {
+                        LoadJadwalTersedia();
+                        LoadRiwayatBooking();
+                        ClearDetailJadwal();
+                        selectedIdJadwal = 0;
+                    }
+                    conn.Close();
                 }
-
-                MessageBox.Show("Booking berhasil dibatalkan!", "Sukses",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                LoadJadwalTersedia();
-                LoadRiwayatBooking();
-                ClearDetailJadwal();
-                selectedIdJadwal = 0;
             }
             catch (Exception ex)
             {
@@ -536,6 +510,7 @@ namespace Sistem_Penyewaan_Studio_Musik
                     if (result == DialogResult.Yes)
                     {
                         BatalkanBooking(id_booking);
+                        selectedIdBooking = 0;
                     }
                 }
                 else
@@ -543,6 +518,11 @@ namespace Sistem_Penyewaan_Studio_Musik
                     MessageBox.Show($"Booking dengan status '{status}' tidak dapat dibatalkan!",
                         "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
+            }
+            else if (e.RowIndex >= 0)
+            {
+                // Simpan ID booking yang dipilih untuk tombol BatalkanPesanan
+                selectedIdBooking = Convert.ToInt32(dgvRiwayatBooking.Rows[e.RowIndex].Cells["id_booking"].Value);
             }
         }
 
@@ -598,7 +578,7 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
-        // Event handlers kosong yang tidak dipakai
+        // Event handlers kosong
         private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
         private void lblJudul_Click(object sender, EventArgs e) { }
         private void lblFilter_Click(object sender, EventArgs e) { }

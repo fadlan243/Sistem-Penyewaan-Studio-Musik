@@ -35,7 +35,6 @@
             this.btnLogout = new System.Windows.Forms.Button();
             this.btnBookingStudio = new System.Windows.Forms.Button();
             this.btnProfil = new System.Windows.Forms.Button();
-            this.btnPembayaran = new System.Windows.Forms.Button();
             this.btnRiwayatBooking = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -107,7 +106,7 @@
             // 
             this.btnBookingStudio.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnBookingStudio.ForeColor = System.Drawing.Color.Firebrick;
-            this.btnBookingStudio.Location = new System.Drawing.Point(62, 518);
+            this.btnBookingStudio.Location = new System.Drawing.Point(204, 518);
             this.btnBookingStudio.Name = "btnBookingStudio";
             this.btnBookingStudio.Size = new System.Drawing.Size(213, 50);
             this.btnBookingStudio.TabIndex = 4;
@@ -127,23 +126,11 @@
             this.btnProfil.UseVisualStyleBackColor = true;
             this.btnProfil.Click += new System.EventHandler(this.btnProfil_Click);
             // 
-            // btnPembayaran
-            // 
-            this.btnPembayaran.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnPembayaran.ForeColor = System.Drawing.Color.Firebrick;
-            this.btnPembayaran.Location = new System.Drawing.Point(582, 518);
-            this.btnPembayaran.Name = "btnPembayaran";
-            this.btnPembayaran.Size = new System.Drawing.Size(213, 50);
-            this.btnPembayaran.TabIndex = 7;
-            this.btnPembayaran.Text = "\t💰 PEMBAYARAN";
-            this.btnPembayaran.UseVisualStyleBackColor = true;
-            this.btnPembayaran.Click += new System.EventHandler(this.btnPembayaran_Click);
-            // 
             // btnRiwayatBooking
             // 
             this.btnRiwayatBooking.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnRiwayatBooking.ForeColor = System.Drawing.Color.Firebrick;
-            this.btnRiwayatBooking.Location = new System.Drawing.Point(322, 518);
+            this.btnRiwayatBooking.Location = new System.Drawing.Point(479, 518);
             this.btnRiwayatBooking.Name = "btnRiwayatBooking";
             this.btnRiwayatBooking.Size = new System.Drawing.Size(213, 50);
             this.btnRiwayatBooking.TabIndex = 8;
@@ -159,7 +146,6 @@
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(856, 651);
             this.Controls.Add(this.btnRiwayatBooking);
-            this.Controls.Add(this.btnPembayaran);
             this.Controls.Add(this.btnProfil);
             this.Controls.Add(this.btnBookingStudio);
             this.Controls.Add(this.panel1);
@@ -183,7 +169,6 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button btnBookingStudio;
         private System.Windows.Forms.Button btnProfil;
-        private System.Windows.Forms.Button btnPembayaran;
         private System.Windows.Forms.Button btnRiwayatBooking;
         private System.Windows.Forms.Button btnLogout;
     }

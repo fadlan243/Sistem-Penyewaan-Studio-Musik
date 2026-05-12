@@ -98,20 +98,6 @@ namespace Sistem_Penyewaan_Studio_Musik
             formRiwayat.ShowDialog();
         }
 
-        private void btnPembayaran_Click(object sender, EventArgs e)
-        {
-            // Buka Form Pembayaran Pelanggan
-            FormRiwayatBookingPelanggan formRiwayat = new FormRiwayatBookingPelanggan(id_pelanggan, nama_pelanggan);
-            formRiwayat.ShowDialog();
-        }
-
-        private void btnLaporan_Click(object sender, EventArgs e)
-        {
-            // Buka Form Laporan Pelanggan
-            FormLaporanPelanggan formLaporan = new FormLaporanPelanggan(id_pelanggan, nama_pelanggan);
-            formLaporan.ShowDialog();
-        }
-
         // ==================== LOAD ULANG PROFIL ====================
         private void LoadUpdatedProfile()
         {

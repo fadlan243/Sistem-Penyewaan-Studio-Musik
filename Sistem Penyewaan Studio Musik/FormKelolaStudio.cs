@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Sistem_Penyewaan_Studio_Musik
@@ -14,19 +9,75 @@ namespace Sistem_Penyewaan_Studio_Musik
     public partial class FormKelolaStudio : Form
     {
         private readonly string connString = "Data Source=FADLANNASRIZAL\\FADLAN;Initial Catalog=StudioMusik_DB;Integrated Security=True";
-        private DataTable dtStudio;
+        private DataTable dtStudio = new DataTable();
+
         private int selectedIdStudio = 0;
         private string mode = "";
 
         public FormKelolaStudio()
         {
             InitializeComponent();
+            CreateManualNavigator();  // Tambahkan ini
+            SetupBinding();
+            LoadData();
+            ClearForm();
         }
 
         private void FormKelolaStudio_Load(object sender, EventArgs e)
         {
+            SetupBinding();
             LoadData();
             ClearForm();
+            CheckBindingSourceStatus(); 
+        }
+
+        // ==================== UCP 2: SETUP BINDING ====================
+        private void SetupBinding()
+        {
+            try
+            {
+                // Hubungkan BindingNavigator ke BindingSource
+                bindingNavigator1.BindingSource = bindingSource2;
+
+                // Hubungkan DataGridView ke BindingSource
+                dgvStudio.DataSource = bindingSource2;
+
+                // Event saat navigasi berubah
+                bindingSource2.CurrentChanged += BindingSource2_CurrentChanged;
+
+                // Aktifkan BindingNavigator
+                bindingNavigator1.Enabled = true;
+
+                // Sembunyikan tombol AddNew dan Delete di BindingNavigator (opsional)
+                bindingNavigatorAddNewItem.Visible = false;
+                bindingNavigatorDeleteItem.Visible = false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error SetupBinding: " + ex.Message);
+            }
+        }
+
+        // ==================== UCP 2: EVENT BINDING NAVIGATOR ====================
+        private void BindingSource2_CurrentChanged(object sender, EventArgs e)
+        {
+            DataRowView row = bindingSource2.Current as DataRowView;
+            if (row == null) return;
+
+            selectedIdStudio = Convert.ToInt32(row["id_studio"]);
+            txtNamaStudio.Text = row["nama_studio"].ToString();
+            txtKapasitas.Text = row["kapasitas"].ToString();
+            txtHargaPerJam.Text = row["harga_per_jam"].ToString();
+            txtDeskripsi.Text = row["deskripsi"]?.ToString() ?? "";
+
+            string status = row["status"].ToString();
+            rbAktif.Checked = (status == "aktif");
+            rbNonaktif.Checked = (status != "aktif");
+
+            btnEdit.Enabled = true;
+            btnHapus.Enabled = true;
+            btnSimpan.Text = "✏️ Update";
+            mode = "edit";
         }
 
         // ==================== LOAD DATA ====================
@@ -37,61 +88,178 @@ namespace Sistem_Penyewaan_Studio_Musik
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
                     conn.Open();
-                    string query = @"SELECT id_studio, nama_studio, kapasitas, harga_per_jam, status, deskripsi 
-                                     FROM tbl_studio 
-                                     WHERE nama_studio LIKE @search
-                                     ORDER BY id_studio";
+                    SqlCommand cmd = new SqlCommand("sp_SearchStudio", conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@keyword", search);
+                    cmd.Parameters.AddWithValue("@status", "semua");
+                    cmd.Parameters.AddWithValue("@sort_by", "nama");
 
-                    SqlDataAdapter da = new SqlDataAdapter(query, conn);
-                    da.SelectCommand.Parameters.AddWithValue("@search", "%" + search + "%");
+                    SqlDataAdapter da = new SqlDataAdapter(cmd);
                     dtStudio = new DataTable();
                     da.Fill(dtStudio);
-
-                    dgvStudio.DataSource = null;
-                    dgvStudio.Columns.Clear();
-                    dgvStudio.DataSource = dtStudio;
+                    conn.Close();
                 }
 
-                if (dgvStudio.Columns.Count > 0)
-                {
-                    if (dgvStudio.Columns.Contains("id_studio"))
-                    {
-                        dgvStudio.Columns["id_studio"].HeaderText = "ID";
-                        dgvStudio.Columns["id_studio"].Width = 50;
-                    }
-                    if (dgvStudio.Columns.Contains("nama_studio"))
-                    {
-                        dgvStudio.Columns["nama_studio"].HeaderText = "Nama Studio";
-                        dgvStudio.Columns["nama_studio"].Width = 200;
-                    }
-                    if (dgvStudio.Columns.Contains("kapasitas"))
-                    {
-                        dgvStudio.Columns["kapasitas"].HeaderText = "Kapasitas";
-                        dgvStudio.Columns["kapasitas"].Width = 100;
-                    }
-                    if (dgvStudio.Columns.Contains("harga_per_jam"))
-                    {
-                        dgvStudio.Columns["harga_per_jam"].HeaderText = "Harga per Jam";
-                        dgvStudio.Columns["harga_per_jam"].Width = 120;
-                        dgvStudio.Columns["harga_per_jam"].DefaultCellStyle.Format = "N0";
-                    }
-                    if (dgvStudio.Columns.Contains("status"))
-                    {
-                        dgvStudio.Columns["status"].HeaderText = "Status";
-                        dgvStudio.Columns["status"].Width = 100;
-                    }
-                    if (dgvStudio.Columns.Contains("deskripsi"))
-                    {
-                        dgvStudio.Columns["deskripsi"].HeaderText = "Deskripsi";
-                        dgvStudio.Columns["deskripsi"].Width = 250;
-                    }
-                }
+                // Isi BindingSource
+                bindingSource2.DataSource = dtStudio;
+                dgvStudio.DataSource = bindingSource2;
+
+                // ✅ Panggil FormatKolom SETELAH DataGridView terisi
+                FormatKolom();
+
+                // Update BindingNavigator
+                bindingNavigator1.Enabled = (dtStudio.Rows.Count > 0);
+
+                Console.WriteLine($"Data loaded: {dtStudio.Rows.Count} rows");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error LoadData: " + ex.Message, "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error LoadData: " + ex.Message);
             }
+        }
+
+        private void CheckBindingSourceStatus()
+        {
+            if (bindingSource2 == null)
+                MessageBox.Show("bindingSource2 is NULL!");
+            else if (bindingSource2.DataSource == null)
+                MessageBox.Show("bindingSource2.DataSource is NULL!");
+            else if (bindingSource2.Count == 0)
+                MessageBox.Show("bindingSource2 is EMPTY (0 rows)!");
+            else
+                MessageBox.Show($"bindingSource2 OK: {bindingSource2.Count} rows");
+        }
+
+        // Buat panel untuk navigasi
+        private void CreateManualNavigator()
+        {
+            Panel navPanel = new Panel();
+            navPanel.Dock = DockStyle.Top;
+            navPanel.Height = 40;
+            navPanel.BackColor = Color.FromArgb(30, 30, 30);
+
+            // Tombol First
+            Button btnFirst = new Button();
+            btnFirst.Text = "|◄";
+            btnFirst.Size = new Size(50, 30);
+            btnFirst.Location = new Point(10, 5);
+            btnFirst.Click += (s, e) => { if (bindingSource2.Count > 0) bindingSource2.Position = 0; };
+
+            // Tombol Previous
+            Button btnPrev = new Button();
+            btnPrev.Text = "◄";
+            btnPrev.Size = new Size(50, 30);
+            btnPrev.Location = new Point(65, 5);
+            btnPrev.Click += (s, e) => { if (bindingSource2.Position > 0) bindingSource2.Position--; };
+
+            // Label posisi
+            Label lblPosition = new Label();
+            lblPosition.Text = "0 of 0";
+            lblPosition.Size = new Size(80, 30);
+            lblPosition.Location = new Point(120, 5);
+            lblPosition.ForeColor = Color.White;
+            lblPosition.TextAlign = ContentAlignment.MiddleCenter;
+
+            // Tombol Next
+            Button btnNext = new Button();
+            btnNext.Text = "►";
+            btnNext.Size = new Size(50, 30);
+            btnNext.Location = new Point(205, 5);
+            btnNext.Click += (s, e) => { if (bindingSource2.Position < bindingSource2.Count - 1) bindingSource2.Position++; };
+
+            // Tombol Last
+            Button btnLast = new Button();
+            btnLast.Text = "►|";
+            btnLast.Size = new Size(50, 30);
+            btnLast.Location = new Point(260, 5);
+            btnLast.Click += (s, e) => { if (bindingSource2.Count > 0) bindingSource2.Position = bindingSource2.Count - 1; };
+
+            // Update label posisi saat posisi berubah
+            bindingSource2.PositionChanged += (s, e) => {
+                lblPosition.Text = $"{bindingSource2.Position + 1} of {bindingSource2.Count}";
+            };
+            bindingSource2.ListChanged += (s, e) => {
+                lblPosition.Text = $"{bindingSource2.Position + 1} of {bindingSource2.Count}";
+            };
+
+            navPanel.Controls.Add(btnFirst);
+            navPanel.Controls.Add(btnPrev);
+            navPanel.Controls.Add(lblPosition);
+            navPanel.Controls.Add(btnNext);
+            navPanel.Controls.Add(btnLast);
+
+            this.Controls.Add(navPanel);
+            navPanel.BringToFront();
+        }
+
+        // ==================== FORMAT KOLOM DGV ====================
+        private void FormatKolom()
+        {
+            // Tunggu sampai DataGridView selesai dibuat
+            if (dgvStudio == null || dgvStudio.Columns == null || dgvStudio.Columns.Count == 0)
+                return;
+
+            // Gunakan try-catch untuk setiap kolom
+            try
+            {
+                if (dgvStudio.Columns.Contains("id_studio"))
+                {
+                    dgvStudio.Columns["id_studio"].HeaderText = "ID";
+                    dgvStudio.Columns["id_studio"].Width = 50;
+                }
+            }
+            catch (Exception ex) { Console.WriteLine("Error id_studio: " + ex.Message); }
+
+            try
+            {
+                if (dgvStudio.Columns.Contains("nama_studio"))
+                {
+                    dgvStudio.Columns["nama_studio"].HeaderText = "Nama Studio";
+                    dgvStudio.Columns["nama_studio"].Width = 200;
+                }
+            }
+            catch (Exception ex) { Console.WriteLine("Error nama_studio: " + ex.Message); }
+
+            try
+            {
+                if (dgvStudio.Columns.Contains("kapasitas"))
+                {
+                    dgvStudio.Columns["kapasitas"].HeaderText = "Kapasitas";
+                    dgvStudio.Columns["kapasitas"].Width = 100;
+                }
+            }
+            catch (Exception ex) { Console.WriteLine("Error kapasitas: " + ex.Message); }
+
+            try
+            {
+                if (dgvStudio.Columns.Contains("harga_per_jam"))
+                {
+                    dgvStudio.Columns["harga_per_jam"].HeaderText = "Harga per Jam";
+                    dgvStudio.Columns["harga_per_jam"].Width = 120;
+                    dgvStudio.Columns["harga_per_jam"].DefaultCellStyle.Format = "N0";
+                }
+            }
+            catch (Exception ex) { Console.WriteLine("Error harga_per_jam: " + ex.Message); }
+
+            try
+            {
+                if (dgvStudio.Columns.Contains("status"))
+                {
+                    dgvStudio.Columns["status"].HeaderText = "Status";
+                    dgvStudio.Columns["status"].Width = 100;
+                }
+            }
+            catch (Exception ex) { Console.WriteLine("Error status: " + ex.Message); }
+
+            try
+            {
+                if (dgvStudio.Columns.Contains("deskripsi"))
+                {
+                    dgvStudio.Columns["deskripsi"].HeaderText = "Deskripsi";
+                    dgvStudio.Columns["deskripsi"].Width = 250;
+                }
+            }
+            catch (Exception ex) { Console.WriteLine("Error deskripsi: " + ex.Message); }
         }
 
         // ==================== CLEAR FORM ====================
@@ -113,25 +281,12 @@ namespace Sistem_Penyewaan_Studio_Musik
         // ==================== SIMPAN / UPDATE ====================
         private void btnSimpan_Click(object sender, EventArgs e)
         {
+            // Validasi input
             if (string.IsNullOrWhiteSpace(txtNamaStudio.Text))
             {
                 MessageBox.Show("Nama Studio harus diisi!", "Peringatan",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtNamaStudio.Focus();
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(txtKapasitas.Text))
-            {
-                MessageBox.Show("Kapasitas harus diisi!", "Peringatan",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtKapasitas.Focus();
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(txtHargaPerJam.Text))
-            {
-                MessageBox.Show("Harga per Jam harus diisi!", "Peringatan",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtHargaPerJam.Focus();
                 return;
             }
             if (!int.TryParse(txtKapasitas.Text, out int kapasitas))
@@ -157,20 +312,31 @@ namespace Sistem_Penyewaan_Studio_Musik
                 {
                     conn.Open();
 
+                    SqlParameter paramPesan = new SqlParameter("@pesan", SqlDbType.VarChar, 255);
+                    paramPesan.Direction = ParameterDirection.Output;
+
                     if (mode == "tambah")
                     {
-                        string query = @"INSERT INTO tbl_studio (nama_studio, kapasitas, harga_per_jam, status, deskripsi) 
-                                         VALUES (@nama, @kapasitas, @harga, @status, @deskripsi)";
-                        SqlCommand cmd = new SqlCommand(query, conn);
-                        cmd.Parameters.AddWithValue("@nama", txtNamaStudio.Text);
+                        SqlCommand cmd = new SqlCommand("sp_InsertStudio", conn);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@nama_studio", txtNamaStudio.Text.Trim());
                         cmd.Parameters.AddWithValue("@kapasitas", kapasitas);
-                        cmd.Parameters.AddWithValue("@harga", harga);
+                        cmd.Parameters.AddWithValue("@harga_per_jam", harga);
+                        cmd.Parameters.AddWithValue("@deskripsi", txtDeskripsi.Text.Trim());
                         cmd.Parameters.AddWithValue("@status", status);
-                        cmd.Parameters.AddWithValue("@deskripsi", txtDeskripsi.Text);
+
+                        SqlParameter paramId = new SqlParameter("@new_id", SqlDbType.Int);
+                        paramId.Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add(paramId);
+                        cmd.Parameters.Add(paramPesan);
+
                         cmd.ExecuteNonQuery();
 
-                        MessageBox.Show("Studio berhasil ditambahkan!", "Sukses",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        string pesan = paramPesan.Value.ToString();
+                        MessageBox.Show(pesan,
+                            pesan.StartsWith("SUKSES") ? "Sukses" : "Peringatan",
+                            MessageBoxButtons.OK,
+                            pesan.StartsWith("SUKSES") ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
                     }
                     else
                     {
@@ -181,21 +347,23 @@ namespace Sistem_Penyewaan_Studio_Musik
                             return;
                         }
 
-                        string query = @"UPDATE tbl_studio 
-                                         SET nama_studio = @nama, kapasitas = @kapasitas, harga_per_jam = @harga, 
-                                             status = @status, deskripsi = @deskripsi
-                                         WHERE id_studio = @id";
-                        SqlCommand cmd = new SqlCommand(query, conn);
-                        cmd.Parameters.AddWithValue("@id", selectedIdStudio);
-                        cmd.Parameters.AddWithValue("@nama", txtNamaStudio.Text);
+                        SqlCommand cmd = new SqlCommand("sp_UpdateStudio", conn);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@id_studio", selectedIdStudio);
+                        cmd.Parameters.AddWithValue("@nama_studio", txtNamaStudio.Text.Trim());
                         cmd.Parameters.AddWithValue("@kapasitas", kapasitas);
-                        cmd.Parameters.AddWithValue("@harga", harga);
+                        cmd.Parameters.AddWithValue("@harga_per_jam", harga);
+                        cmd.Parameters.AddWithValue("@deskripsi", txtDeskripsi.Text.Trim());
                         cmd.Parameters.AddWithValue("@status", status);
-                        cmd.Parameters.AddWithValue("@deskripsi", txtDeskripsi.Text);
+                        cmd.Parameters.Add(paramPesan);
+
                         cmd.ExecuteNonQuery();
 
-                        MessageBox.Show("Studio berhasil diupdate!", "Sukses",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        string pesan = paramPesan.Value.ToString();
+                        MessageBox.Show(pesan,
+                            pesan.StartsWith("SUKSES") ? "Sukses" : "Peringatan",
+                            MessageBoxButtons.OK,
+                            pesan.StartsWith("SUKSES") ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
                     }
                 }
 
@@ -219,54 +387,35 @@ namespace Sistem_Penyewaan_Studio_Musik
                 return;
             }
 
+            DialogResult result = MessageBox.Show("Yakin ingin menghapus studio ini?",
+                "Konfirmasi Hapus", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (result != DialogResult.Yes) return;
+
             try
             {
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
                     conn.Open();
 
-                    // ✅ Cek apakah studio punya jadwal yang sudah dibooking
-                    string cekQuery = @"SELECT COUNT(*) FROM tbl_booking b
-                                        JOIN tbl_jadwal j ON b.id_jadwal = j.id_jadwal
-                                        WHERE j.id_studio = @id";
-                    SqlCommand cmdCek = new SqlCommand(cekQuery, conn);
-                    cmdCek.Parameters.AddWithValue("@id", selectedIdStudio);
-                    int jumlahBooking = (int)cmdCek.ExecuteScalar();
+                    SqlCommand cmd = new SqlCommand("sp_DeleteStudio", conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@id_studio", selectedIdStudio);
 
-                    if (jumlahBooking > 0)
-                    {
-                        MessageBox.Show(
-                            $"Studio ini tidak dapat dihapus karena memiliki {jumlahBooking} booking terkait!\n\n" +
-                            "Ubah status studio menjadi 'Nonaktif' untuk menonaktifkannya.",
-                            "Tidak Dapat Dihapus",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning);
-                        return;
-                    }
+                    SqlParameter paramPesan = new SqlParameter("@pesan", SqlDbType.VarChar, 255);
+                    paramPesan.Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add(paramPesan);
 
-                    DialogResult result = MessageBox.Show("Yakin ingin menghapus studio ini?",
-                        "Konfirmasi Hapus", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    cmd.ExecuteNonQuery();
 
-                    if (result == DialogResult.Yes)
-                    {
-                        // Hapus jadwal terkait dulu, baru hapus studio
-                        string hapusJadwal = "DELETE FROM tbl_jadwal WHERE id_studio = @id";
-                        SqlCommand cmdJadwal = new SqlCommand(hapusJadwal, conn);
-                        cmdJadwal.Parameters.AddWithValue("@id", selectedIdStudio);
-                        cmdJadwal.ExecuteNonQuery();
-
-                        string hapusStudio = "DELETE FROM tbl_studio WHERE id_studio = @id";
-                        SqlCommand cmdStudio = new SqlCommand(hapusStudio, conn);
-                        cmdStudio.Parameters.AddWithValue("@id", selectedIdStudio);
-                        cmdStudio.ExecuteNonQuery();
-
-                        MessageBox.Show("Studio berhasil dihapus!", "Sukses",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        LoadData(txtCari.Text);
-                        ClearForm();
-                    }
+                    string pesan = paramPesan.Value.ToString();
+                    MessageBox.Show(pesan,
+                        pesan.StartsWith("SUKSES") ? "Sukses" : "Peringatan",
+                        MessageBoxButtons.OK,
+                        pesan.StartsWith("SUKSES") ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
                 }
+
+                LoadData(txtCari.Text);
+                ClearForm();
             }
             catch (Exception ex)
             {
@@ -276,24 +425,49 @@ namespace Sistem_Penyewaan_Studio_Musik
         }
 
         // ==================== EVENT HANDLERS ====================
-        private void dgvStudio_CellClick_1(object sender, DataGridViewCellEventArgs e)
+        private void dgvStudio_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0 && dgvStudio.Rows[e.RowIndex].Cells[0].Value != null)
+            // Pastikan klik pada baris yang valid (bukan header)
+            if (e.RowIndex >= 0)
             {
-                selectedIdStudio = Convert.ToInt32(dgvStudio.Rows[e.RowIndex].Cells[0].Value);
-                txtNamaStudio.Text = dgvStudio.Rows[e.RowIndex].Cells[1].Value.ToString();
-                txtKapasitas.Text = dgvStudio.Rows[e.RowIndex].Cells[2].Value.ToString();
-                txtHargaPerJam.Text = dgvStudio.Rows[e.RowIndex].Cells[3].Value.ToString();
-                txtDeskripsi.Text = dgvStudio.Rows[e.RowIndex].Cells[5].Value?.ToString() ?? "";
+                try
+                {
+                    // Ambil baris yang diklik
+                    DataGridViewRow row = dgvStudio.Rows[e.RowIndex];
 
-                string status = dgvStudio.Rows[e.RowIndex].Cells[4].Value.ToString();
-                rbAktif.Checked = (status == "aktif");
-                rbNonaktif.Checked = (status != "aktif");
+                    // Ambil data dari baris yang diklik
+                    selectedIdStudio = Convert.ToInt32(row.Cells["id_studio"].Value);
+                    txtNamaStudio.Text = row.Cells["nama_studio"].Value.ToString();
+                    txtKapasitas.Text = row.Cells["kapasitas"].Value.ToString();
+                    txtHargaPerJam.Text = row.Cells["harga_per_jam"].Value.ToString();
 
-                btnEdit.Enabled = true;
-                btnHapus.Enabled = true;
-                btnSimpan.Text = "✏️ Update";
-                mode = "edit";
+                    // Cek apakah ada kolom deskripsi
+                    if (row.Cells["deskripsi"].Value != null)
+                        txtDeskripsi.Text = row.Cells["deskripsi"].Value.ToString();
+                    else
+                        txtDeskripsi.Text = "";
+
+                    // Set status radio button
+                    string status = row.Cells["status"].Value.ToString();
+                    rbAktif.Checked = (status == "aktif");
+                    rbNonaktif.Checked = (status != "aktif");
+
+                    // Aktifkan tombol Edit dan Hapus
+                    btnEdit.Enabled = true;
+                    btnHapus.Enabled = true;
+
+                    // Ubah teks tombol Simpan menjadi Update
+                    btnSimpan.Text = "✏️ Update";
+                    mode = "edit";
+
+                    // Optional: Tampilkan pesan debug
+                    Console.WriteLine($"Studio dipilih: ID={selectedIdStudio}, Nama={txtNamaStudio.Text}");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error saat memilih data: " + ex.Message, "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -343,7 +517,7 @@ namespace Sistem_Penyewaan_Studio_Musik
             this.Close();
         }
 
-        // Event handlers kosong
+        // Event handlers kosong (dari Designer)
         private void FormKelolaStudio_Load_1(object sender, EventArgs e) { }
         private void lblJudul_Click(object sender, EventArgs e) { }
         private void lblNamaStudio_Click(object sender, EventArgs e) { }
@@ -359,5 +533,9 @@ namespace Sistem_Penyewaan_Studio_Musik
         private void rbNonaktif_CheckedChanged(object sender, EventArgs e) { }
         private void gbInput_Enter_1(object sender, EventArgs e) { }
         private void lblDaftarStudio_Click(object sender, EventArgs e) { }
+        private void bindingNavigator1_RefreshItems(object sender, EventArgs e) { }
+        private void bindingNavigatorPositionItem_Click(object sender, EventArgs e) { }
+        private void bindingNavigator1_RefreshItems_1(object sender, EventArgs e) { }
+        private void bindingSource2_CurrentChanged(object sender, EventArgs e) { }
     }
 }
