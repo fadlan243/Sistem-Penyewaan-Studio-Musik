@@ -170,5 +170,20 @@ namespace Sistem_Penyewaan_Studio_Musik
             if (dgvJadwal.Columns.Contains("keterangan")) dgvJadwal.Columns["keterangan"].HeaderText = "Keterangan";
         }
 
+        private void UpdateStatistik()
+        {
+            try
+            {
+                conn.Open();
+                int total = (int)new SqlCommand("SELECT COUNT(*) FROM tbl_jadwal", conn).ExecuteScalar();
+                int tersedia = (int)new SqlCommand("SELECT COUNT(*) FROM tbl_jadwal WHERE status = 'tersedia'", conn).ExecuteScalar();
+                int dipesan = (int)new SqlCommand("SELECT COUNT(*) FROM tbl_jadwal WHERE status = 'dipesan'", conn).ExecuteScalar();
+                int ditutup = (int)new SqlCommand("SELECT COUNT(*) FROM tbl_jadwal WHERE status = 'ditutup'", conn).ExecuteScalar();
+                conn.Close();
+                lblStatistik.Text = $"📊 STATISTIK: Total: {total} | Tersedia: {tersedia} | Dipesan: {dipesan} | Ditutup: {ditutup}";
+            }
+            catch (Exception ex) { if (conn.State == ConnectionState.Open) conn.Close(); lblStatistik.Text = "📊 STATISTIK: Error"; }
+        }
+
     }
 }
