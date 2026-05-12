@@ -32,5 +32,48 @@ namespace Sistem_Penyewaan_Studio_Musik
 
         }
 
+        
+
+        private void FormPelanggan_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblJudul_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void lblHalo_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblSelamatDatang_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnLogout_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Apakah Anda yakin ingin logout?",
+                "Konfirmasi Logout",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                FormLogin login = new FormLogin();
+                login.Show();
+                this.Close();
+            }
+        }
+
+
     }
 }
