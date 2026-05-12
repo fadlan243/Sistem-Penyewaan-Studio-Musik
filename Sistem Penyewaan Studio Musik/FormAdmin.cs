@@ -47,6 +47,30 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
+        private void PanelAdmin_Paint(object sender, PaintEventArgs e)
+        {
+            // Optional: Tambahkan border bawah pada panel
+            using (Pen pen = new Pen(Color.FromArgb(230, 57, 70), 2))
+            {
+                e.Graphics.DrawLine(pen, 0, ((Panel)sender).Height - 1,
+                    ((Panel)sender).Width, ((Panel)sender).Height - 1);
+            }
+        }
+
+        private void lblAdmin_Click(object sender, EventArgs e)
+        {
+            // Optional: Tampilkan info admin saat diklik
+            MessageBox.Show($"Admin: {nama_admin}\nID Admin: {id_admin}",
+                "Informasi Admin", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void btnLaporan_Click(object sender, EventArgs e)
+        {
+            // Form Laporan untuk admin
+            FormLaporan formLaporan = new FormLaporan();
+            formLaporan.ShowDialog();
+        }
+
        
     }
 }
