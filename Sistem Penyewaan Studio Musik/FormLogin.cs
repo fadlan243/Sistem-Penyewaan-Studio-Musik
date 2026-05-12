@@ -11,5 +11,8 @@ using System.Windows.Forms;
 
 namespace Sistem_Penyewaan_Studio_Musik
 {
+    public partial class FormLogin : Form
+    {
 
+    }
 }
