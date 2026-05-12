@@ -130,6 +130,67 @@ namespace Sistem_Penyewaan_Studio_Musik
                 MessageBox.Show($"bindingSource2 OK: {bindingSource2.Count} rows");
         }
 
-        
+        // Buat panel untuk navigasi
+        private void CreateManualNavigator()
+        {
+            Panel navPanel = new Panel();
+            navPanel.Dock = DockStyle.Top;
+            navPanel.Height = 40;
+            navPanel.BackColor = Color.FromArgb(30, 30, 30);
+
+            // Tombol First
+            Button btnFirst = new Button();
+            btnFirst.Text = "|◄";
+            btnFirst.Size = new Size(50, 30);
+            btnFirst.Location = new Point(10, 5);
+            btnFirst.Click += (s, e) => { if (bindingSource2.Count > 0) bindingSource2.Position = 0; };
+
+            // Tombol Previous
+            Button btnPrev = new Button();
+            btnPrev.Text = "◄";
+            btnPrev.Size = new Size(50, 30);
+            btnPrev.Location = new Point(65, 5);
+            btnPrev.Click += (s, e) => { if (bindingSource2.Position > 0) bindingSource2.Position--; };
+
+            // Label posisi
+            Label lblPosition = new Label();
+            lblPosition.Text = "0 of 0";
+            lblPosition.Size = new Size(80, 30);
+            lblPosition.Location = new Point(120, 5);
+            lblPosition.ForeColor = Color.White;
+            lblPosition.TextAlign = ContentAlignment.MiddleCenter;
+
+            // Tombol Next
+            Button btnNext = new Button();
+            btnNext.Text = "►";
+            btnNext.Size = new Size(50, 30);
+            btnNext.Location = new Point(205, 5);
+            btnNext.Click += (s, e) => { if (bindingSource2.Position < bindingSource2.Count - 1) bindingSource2.Position++; };
+
+            // Tombol Last
+            Button btnLast = new Button();
+            btnLast.Text = "►|";
+            btnLast.Size = new Size(50, 30);
+            btnLast.Location = new Point(260, 5);
+            btnLast.Click += (s, e) => { if (bindingSource2.Count > 0) bindingSource2.Position = bindingSource2.Count - 1; };
+
+            // Update label posisi saat posisi berubah
+            bindingSource2.PositionChanged += (s, e) => {
+                lblPosition.Text = $"{bindingSource2.Position + 1} of {bindingSource2.Count}";
+            };
+            bindingSource2.ListChanged += (s, e) => {
+                lblPosition.Text = $"{bindingSource2.Position + 1} of {bindingSource2.Count}";
+            };
+
+            navPanel.Controls.Add(btnFirst);
+            navPanel.Controls.Add(btnPrev);
+            navPanel.Controls.Add(lblPosition);
+            navPanel.Controls.Add(btnNext);
+                navPanel.Controls.Add(btnLast);
+
+                this.Controls.Add(navPanel);
+                navPanel.BringToFront();
+            }
+
     }
 }
