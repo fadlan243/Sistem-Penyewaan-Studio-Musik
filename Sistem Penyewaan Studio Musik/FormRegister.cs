@@ -266,5 +266,24 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
+        private void chkShowPassword_CheckedChanged(object sender, EventArgs e)
+        {
+            // Menampilkan atau menyembunyikan password
+            if (chkShowPassword.Checked)
+            {
+                txtPassword.PasswordChar = '\0';
+                txtPassword.UseSystemPasswordChar = false;
+                txtKonfPass.PasswordChar = '\0';
+                txtKonfPass.UseSystemPasswordChar = false;
+            }
+            else
+            {
+                txtPassword.PasswordChar = '●';
+                txtPassword.UseSystemPasswordChar = true;
+                txtKonfPass.PasswordChar = '●';
+                txtKonfPass.UseSystemPasswordChar = true;
+            }
+        }
+
     }
 }
