@@ -192,5 +192,75 @@ namespace Sistem_Penyewaan_Studio_Musik
                 navPanel.BringToFront();
             }
 
+            // ==================== FORMAT KOLOM DGV ====================
+            private void FormatKolom()
+            {
+                // Tunggu sampai DataGridView selesai dibuat
+                if (dgvStudio == null || dgvStudio.Columns == null || dgvStudio.Columns.Count == 0)
+                    return;
+
+                // Gunakan try-catch untuk setiap kolom
+                try
+                {
+                    if (dgvStudio.Columns.Contains("id_studio"))
+                    {
+                        dgvStudio.Columns["id_studio"].HeaderText = "ID";
+                        dgvStudio.Columns["id_studio"].Width = 50;
+                    }
+                }
+                catch (Exception ex) { Console.WriteLine("Error id_studio: " + ex.Message); }
+
+                try
+                {
+                    if (dgvStudio.Columns.Contains("nama_studio"))
+                    {
+                        dgvStudio.Columns["nama_studio"].HeaderText = "Nama Studio";
+                        dgvStudio.Columns["nama_studio"].Width = 200;
+                    }
+                }
+                catch (Exception ex) { Console.WriteLine("Error nama_studio: " + ex.Message); }
+
+                try
+                {
+                    if (dgvStudio.Columns.Contains("kapasitas"))
+                    {
+                        dgvStudio.Columns["kapasitas"].HeaderText = "Kapasitas";
+                        dgvStudio.Columns["kapasitas"].Width = 100;
+                    }
+                }
+                catch (Exception ex) { Console.WriteLine("Error kapasitas: " + ex.Message); }
+
+                try
+                {
+                    if (dgvStudio.Columns.Contains("harga_per_jam"))
+                    {
+                        dgvStudio.Columns["harga_per_jam"].HeaderText = "Harga per Jam";
+                        dgvStudio.Columns["harga_per_jam"].Width = 120;
+                        dgvStudio.Columns["harga_per_jam"].DefaultCellStyle.Format = "N0";
+                    }
+                }
+                catch (Exception ex) { Console.WriteLine("Error harga_per_jam: " + ex.Message); }
+
+                try
+                {
+                    if (dgvStudio.Columns.Contains("status"))
+                    {
+                        dgvStudio.Columns["status"].HeaderText = "Status";
+                        dgvStudio.Columns["status"].Width = 100;
+                    }
+                }
+                catch (Exception ex) { Console.WriteLine("Error status: " + ex.Message); }
+
+                try
+                {
+                    if (dgvStudio.Columns.Contains("deskripsi"))
+                    {
+                        dgvStudio.Columns["deskripsi"].HeaderText = "Deskripsi";
+                        dgvStudio.Columns["deskripsi"].Width = 250;
+                    }
+                }
+                catch (Exception ex) { Console.WriteLine("Error deskripsi: " + ex.Message); }
+            }
+
     }
 }
