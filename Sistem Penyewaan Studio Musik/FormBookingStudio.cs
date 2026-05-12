@@ -452,6 +452,15 @@ namespace Sistem_Penyewaan_Studio_Musik
             BuatBooking();
         }
 
+        private void btnBatalBooking_Click(object sender, EventArgs e)
+        {
+            selectedIdJadwal = 0;
+            txtCatatan.Clear();
+            ClearDetailJadwal();
+            MessageBox.Show("Proses booking dibatalkan.", "Info",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
         
     }
 }
