@@ -434,5 +434,14 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
+        // ==================== EVENT HANDLERS ====================
+        private void FormBookingStudio_Load(object sender, EventArgs e) { }
+
+        private void btnCariJadwal_Click(object sender, EventArgs e)
+        {
+            LoadJadwalTersedia();
+        }
+
+        
     }
 }
