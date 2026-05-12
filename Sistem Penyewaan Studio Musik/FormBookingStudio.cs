@@ -354,5 +354,19 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
+        // ==================== CLEAR DETAIL JADWAL ====================
+        private void ClearDetailJadwal()
+        {
+            cbStudio.SelectedIndex = -1;
+            dtpTanggal.Value = DateTime.Now;
+            dtpJamMulai.Value = DateTime.Now.Date.AddHours(10);
+            dtpJamSelesai.Value = DateTime.Now.Date.AddHours(12);
+            txtHargaPerJam.Text = "";
+            txtDurasi.Text = "";
+            txtTotalHarga.Text = "";
+            txtCatatan.Text = "";
+        }
+
+        
     }
 }
