@@ -407,5 +407,32 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
+        // ==================== HITUNG TOTAL HARGA ====================
+        private void HitungTotalHarga()
+        {
+            try
+            {
+                if (!double.TryParse(txtDurasi.Text.Replace(" Jam", ""), out double durasi))
+                {
+                    txtTotalHarga.Text = "Rp 0";
+                    return;
+                }
+
+                string hargaText = txtHargaPerJam.Text.Replace("Rp ", "").Replace(".", "").Replace(",", "");
+                if (!decimal.TryParse(hargaText, out decimal hargaPerJam))
+                {
+                    txtTotalHarga.Text = "Rp 0";
+                    return;
+                }
+
+                decimal totalHarga = (decimal)durasi * hargaPerJam;
+                txtTotalHarga.Text = "Rp " + totalHarga.ToString("N0");
+            }
+            catch
+            {
+                txtTotalHarga.Text = "Rp 0";
+            }
+        }
+
     }
 }
