@@ -58,6 +58,28 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
+        // ==================== UCP 2: EVENT BINDING NAVIGATOR ====================
+        private void BindingSource2_CurrentChanged(object sender, EventArgs e)
+        {
+            DataRowView row = bindingSource2.Current as DataRowView;
+            if (row == null) return;
+
+            selectedIdStudio = Convert.ToInt32(row["id_studio"]);
+            txtNamaStudio.Text = row["nama_studio"].ToString();
+            txtKapasitas.Text = row["kapasitas"].ToString();
+            txtHargaPerJam.Text = row["harga_per_jam"].ToString();
+            txtDeskripsi.Text = row["deskripsi"]?.ToString() ?? "";
+
+            string status = row["status"].ToString();
+            rbAktif.Checked = (status == "aktif");
+            rbNonaktif.Checked = (status != "aktif");
+
+            btnEdit.Enabled = true;
+            btnHapus.Enabled = true;
+            btnSimpan.Text = "✏️ Update";
+            mode = "edit";
+        }
+
         
     }
 }
