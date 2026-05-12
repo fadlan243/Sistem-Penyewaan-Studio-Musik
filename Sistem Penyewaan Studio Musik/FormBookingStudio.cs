@@ -380,5 +380,32 @@ namespace Sistem_Penyewaan_Studio_Musik
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        // ==================== HITUNG DURASI ====================
+        private void HitungDurasi()
+        {
+            try
+            {
+                DateTime jamMulai = dtpJamMulai.Value;
+                DateTime jamSelesai = dtpJamSelesai.Value;
+                TimeSpan selisih = jamSelesai - jamMulai;
+                double durasi = selisih.TotalHours;
+
+                if (durasi <= 0)
+                {
+                    txtDurasi.Text = "0";
+                    txtDurasi.ForeColor = Color.Red;
+                }
+                else
+                {
+                    txtDurasi.Text = durasi.ToString("F1");
+                    txtDurasi.ForeColor = Color.White;
+                }
+            }
+            catch
+            {
+                txtDurasi.Text = "0";
+            }
+        }
+
     }
 }
