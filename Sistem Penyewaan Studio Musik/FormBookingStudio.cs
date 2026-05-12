@@ -479,6 +479,11 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            RefreshAll();
+        }
+
         
     }
 }
