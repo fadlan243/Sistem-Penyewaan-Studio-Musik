@@ -78,6 +78,13 @@ namespace Sistem_Penyewaan_Studio_Musik
             formRiwayat.ShowDialog();
         }
 
+        private void btnKelolaStudio_Click(object sender, EventArgs e)
+        {
+            // Form Kelola Studio
+            FormKelolaStudio formStudio = new FormKelolaStudio();
+            formStudio.ShowDialog();
+        }
+
        
     }
 }
