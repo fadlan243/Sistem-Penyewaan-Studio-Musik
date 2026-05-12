@@ -442,6 +442,11 @@ namespace Sistem_Penyewaan_Studio_Musik
             LoadJadwalTersedia();
         }
 
+        private void btnTutup_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
         
     }
 }
