@@ -312,5 +312,47 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
+        // ==================== UCP 2: MEMBATALKAN BOOKING PAKAI SP ====================
+        private void BatalkanBooking(int id_booking)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    conn.Open();
+
+                    // ✅ UCP 2: Gunakan Stored Procedure sp_CancelBooking
+                    SqlCommand cmd = new SqlCommand("sp_CancelBooking", conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@id_booking", id_booking);
+                    cmd.Parameters.AddWithValue("@id_pelanggan", id_pelanggan);
+
+                    SqlParameter paramPesan = new SqlParameter("@pesan", SqlDbType.VarChar, 255);
+                    paramPesan.Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add(paramPesan);
+
+                    cmd.ExecuteNonQuery();
+
+                    string pesan = paramPesan.Value.ToString();
+                    MessageBox.Show(pesan, pesan.StartsWith("SUKSES") ? "Sukses" : "Peringatan",
+                        MessageBoxButtons.OK, pesan.StartsWith("SUKSES") ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
+
+                    if (pesan.StartsWith("SUKSES"))
+                    {
+                        LoadJadwalTersedia();
+                        LoadRiwayatBooking();
+                        ClearDetailJadwal();
+                        selectedIdJadwal = 0;
+                    }
+                    conn.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error BatalkanBooking: " + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
     }
 }
