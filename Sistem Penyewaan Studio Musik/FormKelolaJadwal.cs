@@ -185,5 +185,29 @@ namespace Sistem_Penyewaan_Studio_Musik
             catch (Exception ex) { if (conn.State == ConnectionState.Open) conn.Close(); lblStatistik.Text = "📊 STATISTIK: Error"; }
         }
 
+        private void ClearForm()
+        {
+            if (cbStudio.Items.Count > 0) cbStudio.SelectedIndex = 0;
+            dtpTanggal.Value = DateTime.Now;
+            dtpJamMulai.Value = DateTime.Now.Date.AddHours(10);
+            dtpJamSelesai.Value = DateTime.Now.Date.AddHours(12);
+            cbStatus.SelectedIndex = 0;
+            txtKeterangan.Clear();
+            selectedIdJadwal = 0;
+            mode = "";
+            btnEdit.Enabled = false;
+            btnHapus.Enabled = false;
+            btnStatusTersedia.Enabled = false;
+            btnStatusDitutup.Enabled = false;
+            btnSimpan.Text = "💾 Simpan";
+        }
+
+        private bool ValidateForm()
+        {
+            if (cbStudio.SelectedValue == null) { MessageBox.Show("Pilih Studio terlebih dahulu!"); return false; }
+            if (dtpJamMulai.Value.TimeOfDay >= dtpJamSelesai.Value.TimeOfDay) { MessageBox.Show("Jam Mulai harus lebih awal dari Jam Selesai!"); return false; }
+            return true;
+        }
+
     }
 }
