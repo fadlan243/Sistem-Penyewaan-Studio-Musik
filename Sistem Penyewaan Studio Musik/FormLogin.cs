@@ -13,6 +13,14 @@ namespace Sistem_Penyewaan_Studio_Musik
 {
     public partial class FormLogin : Form
     {
+        SqlConnection conn = new SqlConnection("Data Source=FADLANNASRIZAL\\FADLAN;Initial Catalog=StudioMusik_DB;Integrated Security=True");
+        private int id_admin;
+        private string nama_admin;
+        public FormLogin()
+        {
+            InitializeComponent();
+        }
 
+     
     }
 }
