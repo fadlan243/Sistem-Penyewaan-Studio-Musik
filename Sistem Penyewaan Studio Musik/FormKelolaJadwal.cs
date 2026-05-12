@@ -158,5 +158,17 @@ namespace Sistem_Penyewaan_Studio_Musik
             catch (Exception ex) { if (conn.State == ConnectionState.Open) conn.Close(); MessageBox.Show("Error LoadDataWithFilter: " + ex.Message); }
         }
 
+        private void FormatDataGridView()
+        {
+            if (dgvJadwal.Columns.Count == 0) return;
+            if (dgvJadwal.Columns.Contains("id_jadwal")) dgvJadwal.Columns["id_jadwal"].HeaderText = "ID";
+            if (dgvJadwal.Columns.Contains("nama_studio")) dgvJadwal.Columns["nama_studio"].HeaderText = "Studio";
+            if (dgvJadwal.Columns.Contains("tanggal")) dgvJadwal.Columns["tanggal"].HeaderText = "Tanggal";
+            if (dgvJadwal.Columns.Contains("jam_mulai")) dgvJadwal.Columns["jam_mulai"].HeaderText = "Jam Mulai";
+            if (dgvJadwal.Columns.Contains("jam_selesai")) dgvJadwal.Columns["jam_selesai"].HeaderText = "Jam Selesai";
+            if (dgvJadwal.Columns.Contains("status")) dgvJadwal.Columns["status"].HeaderText = "Status";
+            if (dgvJadwal.Columns.Contains("keterangan")) dgvJadwal.Columns["keterangan"].HeaderText = "Keterangan";
+        }
+
     }
 }
