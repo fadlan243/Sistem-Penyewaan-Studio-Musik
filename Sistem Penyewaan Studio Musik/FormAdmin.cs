@@ -92,6 +92,13 @@ namespace Sistem_Penyewaan_Studio_Musik
             formUser.ShowDialog();
         }
 
+        private void btnKelolaJadwal_Click(object sender, EventArgs e)
+        {
+            // Form Kelola Jadwal
+            FormKelolaJadwal formKelolaJadwal = new FormKelolaJadwal();
+            formKelolaJadwal.ShowDialog();
+        }
+
        
     }
 }
