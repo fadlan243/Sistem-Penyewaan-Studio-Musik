@@ -91,6 +91,13 @@ namespace Sistem_Penyewaan_Studio_Musik
             formBooking.ShowDialog();
         }
 
+        private void btnRiwayatBooking_Click(object sender, EventArgs e)
+        {
+            // Buka Form Riwayat Booking Pelanggan
+            FormRiwayatBookingPelanggan formRiwayat = new FormRiwayatBookingPelanggan(id_pelanggan, nama_pelanggan);
+            formRiwayat.ShowDialog();
+        }
+
 
     }
 }
