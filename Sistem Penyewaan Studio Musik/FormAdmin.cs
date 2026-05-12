@@ -85,6 +85,13 @@ namespace Sistem_Penyewaan_Studio_Musik
             formStudio.ShowDialog();
         }
 
+        private void btnKelolaPelanggan_Click(object sender, EventArgs e)
+        {
+            // Form Kelola Pelanggan & User
+            FormKelolaPelanggan formUser = new FormKelolaPelanggan();
+            formUser.ShowDialog();
+        }
+
        
     }
 }
