@@ -299,5 +299,61 @@ namespace Sistem_Penyewaan_Studio_Musik
 
         }
 
+        // Method tambahan untuk mendukung Enter key
+        private void txtNama_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+                txtUsername.Focus();
+        }
+
+        private void txtUsername_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+                txtTelp.Focus();
+        }
+
+        private void txtTelp_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+                txtEmail.Focus();
+        }
+
+        private void txtEmail_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+                txtAlamat.Focus();
+        }
+
+        private void txtAlamat_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+                txtPassword.Focus();
+        }
+
+        private void txtPassword_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+                txtKonfPass.Focus();
+        }
+
+        private void txtKonfPass_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+                btnRegister_Click(sender, e);
+        }
+
+        // Method untuk clear form setelah registrasi berhasil
+        private void ClearForm()
+        {
+            txtNama.Clear();
+            txtUsername.Clear();
+            txtTelp.Clear();
+            txtEmail.Clear();
+            txtAlamat.Clear();
+            txtPassword.Clear();
+            txtKonfPass.Clear();
+            chkShowPassword.Checked = false;
+            txtNama.Focus();
+        }
     }
 }
