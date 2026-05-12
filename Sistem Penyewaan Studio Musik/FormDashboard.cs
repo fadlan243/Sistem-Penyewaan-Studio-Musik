@@ -26,5 +26,28 @@ namespace Sistem_Penyewaan_Studio_Musik
             formRegister.Show();
             this.Hide(); // Menyembunyikan form dashboard
         }
+
+        private void lblTitle_Click(object sender, EventArgs e)
+        {
+            // Efek sederhana ketika title diklik - mengubah warna sementara
+            lblTitle.ForeColor = Color.FromArgb(255, 128, 0);
+            Timer timer = new Timer();
+            timer.Interval = 500;
+            timer.Tick += (s, args) =>
+            {
+                lblTitle.ForeColor = Color.White;
+                timer.Stop();
+            };
+            timer.Start();
+        }
+
+        private void btnLogin_Click(object sender, EventArgs e)
+        {
+            // Membuka form login yang memiliki pilihan user (Admin/Pelanggan)
+            FormLogin formLogin = new FormLogin();
+            formLogin.Show();
+            this.Hide();
+        }
+
     }
 }
