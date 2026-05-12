@@ -96,7 +96,9 @@
     <Compile Include="FormLogin.Designer.cs">
       <DependentUpon>FormLogin.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormLoginRentan.cs" />
+    <Compile Include="FormLoginRentan.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FormLoginRentan.Designer.cs">
       <DependentUpon>FormLoginRentan.cs</DependentUpon>
     </Compile>
