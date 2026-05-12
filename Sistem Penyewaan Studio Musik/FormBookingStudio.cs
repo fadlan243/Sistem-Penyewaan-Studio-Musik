@@ -461,6 +461,24 @@ namespace Sistem_Penyewaan_Studio_Musik
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        private void btnBatalkanPesanan_Click(object sender, EventArgs e)
+        {
+            if (selectedIdBooking == 0)
+            {
+                MessageBox.Show("Pilih booking yang akan dibatalkan dari daftar riwayat!",
+                    "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            DialogResult result = MessageBox.Show("Yakin ingin membatalkan booking ini?",
+                "Konfirmasi Pembatalan", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                BatalkanBooking(selectedIdBooking);
+            }
+        }
+
         
     }
 }
