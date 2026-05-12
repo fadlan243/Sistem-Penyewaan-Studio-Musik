@@ -60,9 +60,7 @@
     <Compile Include="FormBookingStudio.Designer.cs">
       <DependentUpon>FormBookingStudio.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormDashboard.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="FormDashboard.cs" />
     <Compile Include="FormDashboard.Designer.cs">
       <DependentUpon>FormDashboard.cs</DependentUpon>
     </Compile>
