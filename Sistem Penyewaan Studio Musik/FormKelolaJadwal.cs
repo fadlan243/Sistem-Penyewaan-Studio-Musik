@@ -105,6 +105,27 @@ namespace Sistem_Penyewaan_Studio_Musik
             catch (Exception ex) { if (conn.State == ConnectionState.Open) conn.Close(); MessageBox.Show("Error LoadStudio: " + ex.Message); }
         }
 
-        
+        private void LoadData()
+        {
+            try
+            {
+                conn.Open();
+                string query = @"SELECT j.id_jadwal, s.nama_studio, j.tanggal, j.jam_mulai, j.jam_selesai, 
+                                        j.status, j.keterangan
+                                 FROM tbl_jadwal j
+                                 JOIN tbl_studio s ON j.id_studio = s.id_studio
+                                 ORDER BY j.tanggal DESC, j.jam_mulai";
+                SqlDataAdapter da = new SqlDataAdapter(query, conn);
+                dtJadwal = new DataTable();
+                da.Fill(dtJadwal);
+                conn.Close();
+
+                bindingSourceJadwal.DataSource = dtJadwal;
+                dgvJadwal.DataSource = bindingSourceJadwal;
+                FormatDataGridView();
+            }
+            catch (Exception ex) { if (conn.State == ConnectionState.Open) conn.Close(); MessageBox.Show("Error LoadData: " + ex.Message); }
+        }
+
     }
 }
