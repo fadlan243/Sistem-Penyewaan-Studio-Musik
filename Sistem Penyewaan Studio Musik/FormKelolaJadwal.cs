@@ -209,5 +209,11 @@ namespace Sistem_Penyewaan_Studio_Musik
             return true;
         }
 
+        private void dgvJadwal_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0) bindingSourceJadwal.Position = e.RowIndex;
+        }
+
+        
     }
 }
