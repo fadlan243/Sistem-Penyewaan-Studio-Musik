@@ -118,6 +118,18 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
+        private void CheckBindingSourceStatus()
+        {
+            if (bindingSource2 == null)
+                MessageBox.Show("bindingSource2 is NULL!");
+            else if (bindingSource2.DataSource == null)
+                MessageBox.Show("bindingSource2.DataSource is NULL!");
+            else if (bindingSource2.Count == 0)
+                MessageBox.Show("bindingSource2 is EMPTY (0 rows)!");
+            else
+                MessageBox.Show($"bindingSource2 OK: {bindingSource2.Count} rows");
+        }
+
         
     }
 }
