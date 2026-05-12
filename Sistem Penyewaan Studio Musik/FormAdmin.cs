@@ -13,6 +13,8 @@ namespace Sistem_Penyewaan_Studio_Musik
 {
     public partial class FormAdmin : Form
     {
+        SqlConnection conn = new SqlConnection("Data Source=FADLANNASRIZAL\\FADLAN;Initial Catalog=StudioMusik_DB;Integrated Security=True");
+
        
     }
 }
