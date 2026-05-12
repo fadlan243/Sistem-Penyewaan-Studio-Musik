@@ -112,5 +112,33 @@ namespace Sistem_Penyewaan_Studio_Musik
             formLaporan.ShowDialog();
         }
 
+        // ==================== LOAD ULANG PROFIL ====================
+        private void LoadUpdatedProfile()
+        {
+            try
+            {
+                conn.Open();
+                string query = "SELECT Nama FROM pelanggan WHERE id_pelanggan = @id";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@id", id_pelanggan);
+                object result = cmd.ExecuteScalar();
+                conn.Close();
+
+                if (result != null)
+                {
+                    string updatedNama = result.ToString();
+                    if (updatedNama != nama_pelanggan)
+                    {
+                        nama_pelanggan = updatedNama;
+                        lblHalo.Text = $"👋 HALO, {nama_pelanggan.ToUpper()}!";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (conn.State == ConnectionState.Open) conn.Close();
+                // Silent error, tidak perlu tampilkan ke user
+            }
+        }
     }
 }
