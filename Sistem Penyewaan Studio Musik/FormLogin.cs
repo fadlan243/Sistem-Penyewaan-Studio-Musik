@@ -54,6 +54,38 @@ namespace Sistem_Penyewaan_Studio_Musik
             System.Diagnostics.Debug.WriteLine($"User memilih: {selectedUser}");
         }
 
+        private void lblUsername_Click(object sender, EventArgs e)
+        {
+            // Memindahkan fokus ke TextBox Username ketika label diklik
+            txtUsername.Focus();
+        }
+
+        private void lblPassword_Click(object sender, EventArgs e)
+        {
+            // Memindahkan fokus ke TextBox Password ketika label diklik
+            txtPassword.Focus();
+        }
+
+        private void txtPassword_TextChanged(object sender, EventArgs e)
+        {
+            // Opsional: Bisa ditambahkan validasi real-time jika diperlukan
+        }
+
+        private void chkShowPassword_CheckedChanged(object sender, EventArgs e)
+        {
+            // Menampilkan atau menyembunyikan password saat checkbox dicentang
+            if (chkShowPassword.Checked)
+            {
+                txtPassword.PasswordChar = '\0'; // Menampilkan teks asli
+                txtPassword.UseSystemPasswordChar = false;
+            }
+            else
+            {
+                txtPassword.PasswordChar = '●'; // Menampilkan bullet
+                txtPassword.UseSystemPasswordChar = true;
+            }
+        }
+
         
     }
 }
