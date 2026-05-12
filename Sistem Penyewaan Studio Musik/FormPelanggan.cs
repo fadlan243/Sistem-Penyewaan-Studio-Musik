@@ -15,7 +15,22 @@ namespace Sistem_Penyewaan_Studio_Musik
     {
         private readonly SqlConnection conn = new SqlConnection("Data Source=FADLANNASRIZAL\\FADLAN;Initial Catalog=StudioMusik_DB;Integrated Security=True");
 
-        
+        private int id_pelanggan;
+        private string nama_pelanggan;
+        private string username_pelanggan;
+        public FormPelanggan(int id_pelanggan = 1, string nama_pelanggan = "Pelanggan", string username_pelanggan = "")
+        {
+            InitializeComponent();
+            this.id_pelanggan = id_pelanggan;
+            this.nama_pelanggan = nama_pelanggan;
+            this.username_pelanggan = username_pelanggan;
+
+            // Tampilkan nama pelanggan di label Halo
+            lblHalo.Text = $"👋 HALO, {nama_pelanggan.ToUpper()}!";
+
+            // Apply styling
+
         }
+
     }
 }
