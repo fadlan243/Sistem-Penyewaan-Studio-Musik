@@ -127,5 +127,36 @@ namespace Sistem_Penyewaan_Studio_Musik
             catch (Exception ex) { if (conn.State == ConnectionState.Open) conn.Close(); MessageBox.Show("Error LoadData: " + ex.Message); }
         }
 
+        private void LoadDataWithFilter()
+        {
+            try
+            {
+                string studioFilter = "";
+                if (cbStudioFilter.SelectedValue != null)
+                    studioFilter = cbStudioFilter.SelectedValue.ToString();
+                DateTime tanggalFilter = dtpTanggalFilter.Value.Date;
+
+                conn.Open();
+                string query = @"SELECT j.id_jadwal, s.nama_studio, j.tanggal, j.jam_mulai, j.jam_selesai, 
+                                        j.status, j.keterangan
+                                 FROM tbl_jadwal j
+                                 JOIN tbl_studio s ON j.id_studio = s.id_studio
+                                 WHERE (@studio = '' OR j.id_studio = @studio)
+                                 AND (j.tanggal = @tanggal)
+                                 ORDER BY j.tanggal DESC, j.jam_mulai";
+                SqlDataAdapter da = new SqlDataAdapter(query, conn);
+                da.SelectCommand.Parameters.AddWithValue("@studio", string.IsNullOrEmpty(studioFilter) ? "" : studioFilter);
+                da.SelectCommand.Parameters.AddWithValue("@tanggal", tanggalFilter);
+                dtJadwal = new DataTable();
+                da.Fill(dtJadwal);
+                conn.Close();
+
+                bindingSourceJadwal.DataSource = dtJadwal;
+                dgvJadwal.DataSource = bindingSourceJadwal;
+                FormatDataGridView();
+            }
+            catch (Exception ex) { if (conn.State == ConnectionState.Open) conn.Close(); MessageBox.Show("Error LoadDataWithFilter: " + ex.Message); }
+        }
+
     }
 }
