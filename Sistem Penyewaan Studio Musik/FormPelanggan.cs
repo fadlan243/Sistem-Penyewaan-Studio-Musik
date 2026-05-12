@@ -84,6 +84,13 @@ namespace Sistem_Penyewaan_Studio_Musik
             LoadUpdatedProfile();
         }
 
+        private void btnBookingStudio_Click(object sender, EventArgs e)
+        {
+            // Buka Form Booking Studio
+            FormBookingStudio formBooking = new FormBookingStudio(id_pelanggan, nama_pelanggan);
+            formBooking.ShowDialog();
+        }
+
 
     }
 }
