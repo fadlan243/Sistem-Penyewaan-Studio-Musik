@@ -367,6 +367,18 @@ namespace Sistem_Penyewaan_Studio_Musik
             txtCatatan.Text = "";
         }
 
-        
+        // ==================== REFRESH SEMUA DATA ====================
+        private void RefreshAll()
+        {
+            LoadJadwalTersedia();
+            LoadRiwayatBooking();
+            LoadDataPelanggan();
+            ClearDetailJadwal();
+            selectedIdJadwal = 0;
+            txtCatatan.Clear();
+            MessageBox.Show("Data berhasil direfresh!", "Info",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
     }
 }
