@@ -84,7 +84,6 @@
             this.lblJudul.Size = new System.Drawing.Size(500, 32);
             this.lblJudul.TabIndex = 0;
             this.lblJudul.Text = "📅 BOOKING STUDIO - BLACK ROCK STUDIO";
-            this.lblJudul.Click += new System.EventHandler(this.lblJudul_Click);
             // 
             // lblFilter
             // 
@@ -97,7 +96,6 @@
             this.lblFilter.Size = new System.Drawing.Size(146, 28);
             this.lblFilter.TabIndex = 1;
             this.lblFilter.Text = "FILTER JADWAL";
-            this.lblFilter.Click += new System.EventHandler(this.lblFilter_Click);
             // 
             // lblStudioFilter
             // 
@@ -110,7 +108,6 @@
             this.lblStudioFilter.Size = new System.Drawing.Size(72, 25);
             this.lblStudioFilter.TabIndex = 2;
             this.lblStudioFilter.Text = "\tStudio :";
-            this.lblStudioFilter.Click += new System.EventHandler(this.lblStudioFilter_Click);
             // 
             // lblTanggalFilter
             // 
@@ -123,7 +120,6 @@
             this.lblTanggalFilter.Size = new System.Drawing.Size(82, 25);
             this.lblTanggalFilter.TabIndex = 3;
             this.lblTanggalFilter.Text = "Tanggal :";
-            this.lblTanggalFilter.Click += new System.EventHandler(this.lblTanggalFilter_Click);
             // 
             // lblDaftarJadwal
             // 
@@ -136,7 +132,6 @@
             this.lblDaftarJadwal.Size = new System.Drawing.Size(284, 28);
             this.lblDaftarJadwal.TabIndex = 4;
             this.lblDaftarJadwal.Text = "📋 DAFTAR JADWAL TERSEDIA";
-            this.lblDaftarJadwal.Click += new System.EventHandler(this.lblDaftarJadwal_Click);
             // 
             // lblFormBooking
             // 
@@ -149,7 +144,6 @@
             this.lblFormBooking.Size = new System.Drawing.Size(191, 28);
             this.lblFormBooking.TabIndex = 5;
             this.lblFormBooking.Text = "📝 FORM BOOKING";
-            this.lblFormBooking.Click += new System.EventHandler(this.lblFormBooking_Click);
             // 
             // lblDetailJadwal
             // 
@@ -162,7 +156,6 @@
             this.lblDetailJadwal.Size = new System.Drawing.Size(164, 28);
             this.lblDetailJadwal.TabIndex = 6;
             this.lblDetailJadwal.Text = "DETAIL BOOKING";
-            this.lblDetailJadwal.Click += new System.EventHandler(this.lblDetailJadwal_Click);
             // 
             // lblDataPelanggan
             // 
@@ -175,7 +168,6 @@
             this.lblDataPelanggan.Size = new System.Drawing.Size(180, 28);
             this.lblDataPelanggan.TabIndex = 7;
             this.lblDataPelanggan.Text = "DATA PELANGGAN";
-            this.lblDataPelanggan.Click += new System.EventHandler(this.lblDataPelanggan_Click);
             // 
             // lblStudio
             // 
@@ -188,7 +180,6 @@
             this.lblStudio.Size = new System.Drawing.Size(77, 25);
             this.lblStudio.TabIndex = 8;
             this.lblStudio.Text = "Studio : ";
-            this.lblStudio.Click += new System.EventHandler(this.lblStudio_Click);
             // 
             // lblTanggal
             // 
@@ -201,7 +192,6 @@
             this.lblTanggal.Size = new System.Drawing.Size(87, 25);
             this.lblTanggal.TabIndex = 9;
             this.lblTanggal.Text = "Tanggal : ";
-            this.lblTanggal.Click += new System.EventHandler(this.lblTanggal_Click);
             // 
             // lblRiwayatBooking
             // 
@@ -214,7 +204,6 @@
             this.lblRiwayatBooking.Size = new System.Drawing.Size(264, 28);
             this.lblRiwayatBooking.TabIndex = 19;
             this.lblRiwayatBooking.Text = "📜 RIWAYAT BOOKING SAYA";
-            this.lblRiwayatBooking.Click += new System.EventHandler(this.lblRiwayatBooking_Click);
             // 
             // lblNoTelpPelanggan
             // 
@@ -227,7 +216,6 @@
             this.lblNoTelpPelanggan.Size = new System.Drawing.Size(115, 25);
             this.lblNoTelpPelanggan.TabIndex = 18;
             this.lblNoTelpPelanggan.Text = "No. Telepon :";
-            this.lblNoTelpPelanggan.Click += new System.EventHandler(this.lblNoTelpPelanggan_Click);
             // 
             // lblEmailPelanggan
             // 
@@ -240,7 +228,6 @@
             this.lblEmailPelanggan.Size = new System.Drawing.Size(68, 25);
             this.lblEmailPelanggan.TabIndex = 17;
             this.lblEmailPelanggan.Text = "Email : ";
-            this.lblEmailPelanggan.Click += new System.EventHandler(this.lblEmailPelanggan_Click);
             // 
             // lblNamaPelanggan
             // 
@@ -253,7 +240,6 @@
             this.lblNamaPelanggan.Size = new System.Drawing.Size(73, 25);
             this.lblNamaPelanggan.TabIndex = 16;
             this.lblNamaPelanggan.Text = "Nama : ";
-            this.lblNamaPelanggan.Click += new System.EventHandler(this.lblNamaPelanggan_Click);
             // 
             // lblCatatan
             // 
@@ -266,7 +252,6 @@
             this.lblCatatan.Size = new System.Drawing.Size(86, 25);
             this.lblCatatan.TabIndex = 15;
             this.lblCatatan.Text = "Catatan : ";
-            this.lblCatatan.Click += new System.EventHandler(this.lblCatatan_Click);
             // 
             // lblTotalHarga
             // 
@@ -279,7 +264,6 @@
             this.lblTotalHarga.Size = new System.Drawing.Size(116, 25);
             this.lblTotalHarga.TabIndex = 14;
             this.lblTotalHarga.Text = "Total Harga : ";
-            this.lblTotalHarga.Click += new System.EventHandler(this.lblTotalHarga_Click);
             // 
             // lblDurasi
             // 
@@ -292,7 +276,6 @@
             this.lblDurasi.Size = new System.Drawing.Size(76, 25);
             this.lblDurasi.TabIndex = 13;
             this.lblDurasi.Text = "Durasi : ";
-            this.lblDurasi.Click += new System.EventHandler(this.lblDurasi_Click);
             // 
             // lblHargaPerJam
             // 
@@ -305,7 +288,6 @@
             this.lblHargaPerJam.Size = new System.Drawing.Size(139, 25);
             this.lblHargaPerJam.TabIndex = 12;
             this.lblHargaPerJam.Text = "Harga Per Jam : ";
-            this.lblHargaPerJam.Click += new System.EventHandler(this.lblHargaPerJam_Click);
             // 
             // lblJamSelesai
             // 
@@ -318,7 +300,6 @@
             this.lblJamSelesai.Size = new System.Drawing.Size(115, 25);
             this.lblJamSelesai.TabIndex = 11;
             this.lblJamSelesai.Text = "Jam Selesai : ";
-            this.lblJamSelesai.Click += new System.EventHandler(this.lblJamSelesai_Click);
             // 
             // lblJamMulai
             // 
@@ -331,7 +312,6 @@
             this.lblJamMulai.Size = new System.Drawing.Size(105, 25);
             this.lblJamMulai.TabIndex = 10;
             this.lblJamMulai.Text = "Jam Mulai : ";
-            this.lblJamMulai.Click += new System.EventHandler(this.lblJamMulai_Click);
             // 
             // cbStudioFilter
             // 
@@ -356,7 +336,6 @@
             this.txtCatatan.Name = "txtCatatan";
             this.txtCatatan.Size = new System.Drawing.Size(133, 26);
             this.txtCatatan.TabIndex = 22;
-            this.txtCatatan.TextChanged += new System.EventHandler(this.txtCatatan_TextChanged);
             // 
             // txtNoTelp
             // 
@@ -364,7 +343,6 @@
             this.txtNoTelp.Name = "txtNoTelp";
             this.txtNoTelp.Size = new System.Drawing.Size(133, 26);
             this.txtNoTelp.TabIndex = 23;
-            this.txtNoTelp.TextChanged += new System.EventHandler(this.txtNoTelp_TextChanged);
             // 
             // txtEmail
             // 
@@ -372,7 +350,6 @@
             this.txtEmail.Name = "txtEmail";
             this.txtEmail.Size = new System.Drawing.Size(133, 26);
             this.txtEmail.TabIndex = 24;
-            this.txtEmail.TextChanged += new System.EventHandler(this.txtEmail_TextChanged);
             // 
             // txtNama
             // 
@@ -380,7 +357,6 @@
             this.txtNama.Name = "txtNama";
             this.txtNama.Size = new System.Drawing.Size(133, 26);
             this.txtNama.TabIndex = 25;
-            this.txtNama.TextChanged += new System.EventHandler(this.txtNama_TextChanged);
             // 
             // btnCariJadwal
             // 
@@ -458,7 +434,6 @@
             this.dgvJadwalTersedia.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvJadwalTersedia.Size = new System.Drawing.Size(776, 164);
             this.dgvJadwalTersedia.TabIndex = 32;
-            this.dgvJadwalTersedia.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvJadwalTersedia_CellClick);
             // 
             // dgvRiwayatBooking
             // 
@@ -477,7 +452,6 @@
             this.dgvRiwayatBooking.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvRiwayatBooking.Size = new System.Drawing.Size(776, 201);
             this.dgvRiwayatBooking.TabIndex = 33;
-            this.dgvRiwayatBooking.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvRiwayatBooking_CellClick);
             // 
             // cbStudio
             // 
@@ -486,7 +460,6 @@
             this.cbStudio.Name = "cbStudio";
             this.cbStudio.Size = new System.Drawing.Size(110, 28);
             this.cbStudio.TabIndex = 34;
-            this.cbStudio.SelectedIndexChanged += new System.EventHandler(this.cbStudio_SelectedIndexChanged);
             // 
             // dtpTanggal
             // 
@@ -495,7 +468,6 @@
             this.dtpTanggal.Name = "dtpTanggal";
             this.dtpTanggal.Size = new System.Drawing.Size(110, 26);
             this.dtpTanggal.TabIndex = 35;
-            this.dtpTanggal.ValueChanged += new System.EventHandler(this.dtpTanggal_ValueChanged);
             // 
             // dtpJamSelesai
             // 
@@ -505,7 +477,6 @@
             this.dtpJamSelesai.Size = new System.Drawing.Size(110, 26);
             this.dtpJamSelesai.TabIndex = 36;
             this.dtpJamSelesai.Value = new System.DateTime(2026, 5, 12, 15, 53, 0, 0);
-            this.dtpJamSelesai.ValueChanged += new System.EventHandler(this.dtpJamSelesai_ValueChanged);
             // 
             // dtpJamMulai
             // 
@@ -514,7 +485,6 @@
             this.dtpJamMulai.Name = "dtpJamMulai";
             this.dtpJamMulai.Size = new System.Drawing.Size(110, 26);
             this.dtpJamMulai.TabIndex = 37;
-            this.dtpJamMulai.ValueChanged += new System.EventHandler(this.dtpJamMulai_ValueChanged);
             // 
             // txtDurasi
             // 
@@ -523,7 +493,6 @@
             this.txtDurasi.Name = "txtDurasi";
             this.txtDurasi.Size = new System.Drawing.Size(112, 26);
             this.txtDurasi.TabIndex = 38;
-            this.txtDurasi.TextChanged += new System.EventHandler(this.txtDurasi_TextChanged);
             // 
             // txtHargaPerJam
             // 

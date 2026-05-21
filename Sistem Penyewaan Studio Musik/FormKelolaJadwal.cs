@@ -214,6 +214,124 @@ namespace Sistem_Penyewaan_Studio_Musik
             if (e.RowIndex >= 0) bindingSourceJadwal.Position = e.RowIndex;
         }
 
-        
+        private void btnCari_Click(object sender, EventArgs e) { LoadDataWithFilter(); }
+        private void btnTambah_Click(object sender, EventArgs e) { ClearForm(); selectedIdJadwal = 0; mode = "tambah"; cbStudio.Focus(); btnSimpan.Text = "💾 Simpan"; }
+        private void btnEdit_Click(object sender, EventArgs e)
+        {
+            if (selectedIdJadwal == 0) { MessageBox.Show("Pilih jadwal yang akan diedit!"); return; }
+            cbStudio.Focus(); btnSimpan.Text = "✏️ Update"; mode = "edit";
+        }
+        private void btnSimpan_Click(object sender, EventArgs e)
+        {
+            if (!ValidateForm()) return;
+            int idStudio = Convert.ToInt32(cbStudio.SelectedValue);
+            DateTime tanggal = dtpTanggal.Value.Date;
+            TimeSpan jamMulai = dtpJamMulai.Value.TimeOfDay;
+            TimeSpan jamSelesai = dtpJamSelesai.Value.TimeOfDay;
+            string status = cbStatus.SelectedItem?.ToString().ToLower() ?? "tersedia";
+            string keterangan = txtKeterangan.Text;
+            try
+            {
+                conn.Open();
+                if (mode == "tambah")
+                {
+                    string query = @"INSERT INTO tbl_jadwal (id_studio, tanggal, jam_mulai, jam_selesai, status, keterangan) 
+                                     VALUES (@id_studio, @tanggal, @jam_mulai, @jam_selesai, @status, @keterangan)";
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@id_studio", idStudio);
+                    cmd.Parameters.AddWithValue("@tanggal", tanggal);
+                    cmd.Parameters.AddWithValue("@jam_mulai", jamMulai);
+                    cmd.Parameters.AddWithValue("@jam_selesai", jamSelesai);
+                    cmd.Parameters.AddWithValue("@status", status);
+                    cmd.Parameters.AddWithValue("@keterangan", keterangan);
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Jadwal berhasil ditambahkan!");
+                }
+                else
+                {
+                    string query = @"UPDATE tbl_jadwal SET id_studio = @id_studio, tanggal = @tanggal, jam_mulai = @jam_mulai, 
+                                         jam_selesai = @jam_selesai, status = @status, keterangan = @keterangan 
+                                     WHERE id_jadwal = @id";
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@id", selectedIdJadwal);
+                    cmd.Parameters.AddWithValue("@id_studio", idStudio);
+                    cmd.Parameters.AddWithValue("@tanggal", tanggal);
+                    cmd.Parameters.AddWithValue("@jam_mulai", jamMulai);
+                    cmd.Parameters.AddWithValue("@jam_selesai", jamSelesai);
+                    cmd.Parameters.AddWithValue("@status", status);
+                    cmd.Parameters.AddWithValue("@keterangan", keterangan);
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Jadwal berhasil diupdate!");
+                }
+                conn.Close();
+                LoadData();
+                UpdateStatistik();
+                ClearForm();
+            }
+            catch (Exception ex) { if (conn.State == ConnectionState.Open) conn.Close(); MessageBox.Show("Error: " + ex.Message); }
+        }
+        private void btnHapus_Click(object sender, EventArgs e)
+        {
+            if (selectedIdJadwal == 0) { MessageBox.Show("Pilih jadwal yang akan dihapus!"); return; }
+            if (DialogResult.Yes != MessageBox.Show("Yakin ingin menghapus jadwal ini?", "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)) return;
+            try
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("DELETE FROM tbl_jadwal WHERE id_jadwal = @id", conn);
+                cmd.Parameters.AddWithValue("@id", selectedIdJadwal);
+                cmd.ExecuteNonQuery();
+                conn.Close();
+                MessageBox.Show("Jadwal berhasil dihapus!");
+                LoadData();
+                UpdateStatistik();
+                ClearForm();
+            }
+            catch (Exception ex) { if (conn.State == ConnectionState.Open) conn.Close(); MessageBox.Show("Error: " + ex.Message); }
+        }
+        private void btnStatusTersedia_Click(object sender, EventArgs e) { UpdateStatusJadwal("tersedia"); }
+        private void btnStatusDitutup_Click(object sender, EventArgs e) { UpdateStatusJadwal("ditutup"); }
+        private void UpdateStatusJadwal(string status)
+        {
+            if (selectedIdJadwal == 0) { MessageBox.Show("Pilih jadwal terlebih dahulu!"); return; }
+            try
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("UPDATE tbl_jadwal SET status = @status WHERE id_jadwal = @id", conn);
+                cmd.Parameters.AddWithValue("@id", selectedIdJadwal);
+                cmd.Parameters.AddWithValue("@status", status);
+                cmd.ExecuteNonQuery();
+                conn.Close();
+                MessageBox.Show($"Status jadwal berhasil diubah menjadi {status}!");
+                LoadData();
+                UpdateStatistik();
+                ClearForm();
+            }
+            catch (Exception ex) { if (conn.State == ConnectionState.Open) conn.Close(); MessageBox.Show("Error: " + ex.Message); }
+        }
+        private void btnReset_Click(object sender, EventArgs e) { ClearForm(); dgvJadwal.ClearSelection(); btnSimpan.Text = "💾 Simpan"; mode = ""; }
+        private void btnTutup_Click(object sender, EventArgs e) { this.Close(); }
+
+        // Event kosong dari Designer
+        private void label7_Click(object sender, EventArgs e) { }
+        private void dtpJamMulai_ValueChanged(object sender, EventArgs e) { }
+        private void lblJudul_Click(object sender, EventArgs e) { }
+        private void lblDaftarJadwal_Click(object sender, EventArgs e) { }
+        private void lblStudioFilter_Click(object sender, EventArgs e) { }
+        private void cbStudioFilter_SelectedIndexChanged(object sender, EventArgs e) { }
+        private void dtpTanggalFilter_ValueChanged(object sender, EventArgs e) { }
+        private void lblStatistik_Click(object sender, EventArgs e) { }
+        private void lblFormTitle_Click(object sender, EventArgs e) { }
+        private void lblStudio_Click(object sender, EventArgs e) { }
+        private void cbStudio_SelectedIndexChanged(object sender, EventArgs e) { }
+        private void lblTanggal_Click(object sender, EventArgs e) { }
+        private void dtpTanggal_ValueChanged(object sender, EventArgs e) { }
+        private void lblJamMulai_Click(object sender, EventArgs e) { }
+        private void FormKelolaJadwal_Load(object sender, EventArgs e) { }
+        private void lblJamSelesai_Click(object sender, EventArgs e) { }
+        private void dtpJamSelesai_ValueChanged(object sender, EventArgs e) { }
+        private void lblStatus_Click(object sender, EventArgs e) { }
+        private void cbStatus_SelectedIndexChanged(object sender, EventArgs e) { }
+        private void lblKeterangan_Click(object sender, EventArgs e) { }
+        private void txtKeterangan_TextChanged(object sender, EventArgs e) { }
     }
 }
