@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OfficeOpenXml;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -101,13 +102,45 @@ namespace Sistem_Penyewaan_Studio_Musik
 
         private void FormAdmin_Load(object sender, EventArgs e)
         {
-
+            
         }
 
         private void btnPembayaran_Click(object sender, EventArgs e)
         {
             FormPembayaran formPembayaran = new FormPembayaran(this.id_admin, this.nama_admin);
             formPembayaran.ShowDialog();
+        }
+
+        private void btnImportExcel_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Buka FormImportExcel
+                FormImportExcel formImport = new FormImportExcel();
+                formImport.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error membuka Form Import Excel: " + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnReport_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Buat instance FormReportViewer
+                FormReportViewer formReport = new FormReportViewer();
+
+                // Tampilkan sebagai dialog (modal)
+                formReport.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error membuka Form Laporan: " + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

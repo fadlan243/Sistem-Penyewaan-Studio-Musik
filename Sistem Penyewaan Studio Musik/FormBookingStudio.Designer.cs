@@ -434,6 +434,7 @@
             this.dgvJadwalTersedia.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvJadwalTersedia.Size = new System.Drawing.Size(776, 164);
             this.dgvJadwalTersedia.TabIndex = 32;
+            this.dgvJadwalTersedia.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvJadwalTersedia_CellClick);
             // 
             // dgvRiwayatBooking
             // 
@@ -452,6 +453,7 @@
             this.dgvRiwayatBooking.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvRiwayatBooking.Size = new System.Drawing.Size(776, 201);
             this.dgvRiwayatBooking.TabIndex = 33;
+            this.dgvRiwayatBooking.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvRiwayatBooking_CellClick);
             // 
             // cbStudio
             // 

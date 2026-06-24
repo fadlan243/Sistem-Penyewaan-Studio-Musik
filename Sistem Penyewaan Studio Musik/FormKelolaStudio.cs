@@ -8,7 +8,7 @@ namespace Sistem_Penyewaan_Studio_Musik
 {
     public partial class FormKelolaStudio : Form
     {
-        private readonly string connString = "Data Source=FADLANNASRIZAL\\FADLAN;Initial Catalog=StudioMusik_DB;Integrated Security=True";
+        private readonly string connString = "Data Source=192.168.1.5,1433;Initial Catalog=StudioMusik_DB;User ID=sa;Password=Masamba24032006;";
         private DataTable dtStudio = new DataTable();
 
         private int selectedIdStudio = 0;
@@ -102,7 +102,7 @@ namespace Sistem_Penyewaan_Studio_Musik
 
                 // Isi BindingSource
                 bindingSource2.DataSource = dtStudio;
-                dgvStudio.DataSource = bindingSource2;
+                dgvStudio.DataSource = bindingSource2;  
 
                 // ✅ Panggil FormatKolom SETELAH DataGridView terisi
                 FormatKolom();

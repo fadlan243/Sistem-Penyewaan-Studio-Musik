@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OfficeOpenXml;
+using System;
 using System.Windows.Forms;
 
 namespace Sistem_Penyewaan_Studio_Musik
@@ -8,6 +9,7 @@ namespace Sistem_Penyewaan_Studio_Musik
         [STAThread]
         static void Main()
         {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

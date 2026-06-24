@@ -315,25 +315,19 @@ namespace Sistem_Penyewaan_Studio_Musik
             {
                 if (conn.State == ConnectionState.Open) conn.Close();
                 conn.Open();
+
+                // Cukup update status di tbl_booking saja
                 string query = "UPDATE tbl_booking SET status = @status WHERE id_booking = @id";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@id", selectedIdBooking);
                 cmd.Parameters.AddWithValue("@status", status);
                 cmd.ExecuteNonQuery();
 
-                // Jika status disetujui, update status jadwal menjadi dipesan
-                if (status == "disetujui")
-                {
-                    string updateJadwal = @"UPDATE j SET j.status = 'dipesan'
-                                            FROM tbl_jadwal j
-                                            JOIN tbl_booking b ON j.id_jadwal = b.id_jadwal
-                                            WHERE b.id_booking = @id";
-                    SqlCommand cmdJadwal = new SqlCommand(updateJadwal, conn);
-                    cmdJadwal.Parameters.AddWithValue("@id", selectedIdBooking);
-                    cmdJadwal.ExecuteNonQuery();
-                }
-
                 conn.Close();
+
+                // 💡 CATATAN UNTUK SIDANG: 
+                // Jika status yang dikirim 'disetujui', tabel 'tbl_jadwal' otomatis ter-update 
+                // menjadi 'dipesan' via TRIGGER di database server, bukan lewat baris kode C# ini lagi.
 
                 MessageBox.Show($"Status booking berhasil diubah menjadi {status}!", "Sukses",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);

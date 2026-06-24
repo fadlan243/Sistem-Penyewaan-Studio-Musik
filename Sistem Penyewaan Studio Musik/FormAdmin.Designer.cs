@@ -37,6 +37,8 @@
             this.PanelAdmin = new System.Windows.Forms.Panel();
             this.btnLogout = new System.Windows.Forms.Button();
             this.btnPembayaran = new System.Windows.Forms.Button();
+            this.btnImportExcel = new System.Windows.Forms.Button();
+            this.btnReport = new System.Windows.Forms.Button();
             this.PanelAdmin.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -144,6 +146,28 @@
             this.btnPembayaran.UseVisualStyleBackColor = true;
             this.btnPembayaran.Click += new System.EventHandler(this.btnPembayaran_Click);
             // 
+            // btnImportExcel
+            // 
+            this.btnImportExcel.ForeColor = System.Drawing.Color.Firebrick;
+            this.btnImportExcel.Location = new System.Drawing.Point(339, 608);
+            this.btnImportExcel.Name = "btnImportExcel";
+            this.btnImportExcel.Size = new System.Drawing.Size(248, 51);
+            this.btnImportExcel.TabIndex = 8;
+            this.btnImportExcel.Text = "Import Excel";
+            this.btnImportExcel.UseVisualStyleBackColor = true;
+            this.btnImportExcel.Click += new System.EventHandler(this.btnImportExcel_Click);
+            // 
+            // btnReport
+            // 
+            this.btnReport.ForeColor = System.Drawing.Color.Firebrick;
+            this.btnReport.Location = new System.Drawing.Point(70, 608);
+            this.btnReport.Name = "btnReport";
+            this.btnReport.Size = new System.Drawing.Size(248, 51);
+            this.btnReport.TabIndex = 9;
+            this.btnReport.Text = "📊 Report & Chart";
+            this.btnReport.UseVisualStyleBackColor = true;
+            this.btnReport.Click += new System.EventHandler(this.btnReport_Click);
+            // 
             // FormAdmin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -151,6 +175,8 @@
             this.BackgroundImage = global::Sistem_Penyewaan_Studio_Musik.Properties.Resources.ChatGPT_Image_6_Mei_2026__22_38_38;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(940, 687);
+            this.Controls.Add(this.btnReport);
+            this.Controls.Add(this.btnImportExcel);
             this.Controls.Add(this.btnPembayaran);
             this.Controls.Add(this.PanelAdmin);
             this.Controls.Add(this.btnKelolaJadwal);
@@ -177,5 +203,7 @@
         private System.Windows.Forms.Panel PanelAdmin;
         private System.Windows.Forms.Button btnLogout;
         private System.Windows.Forms.Button btnPembayaran;
+        private System.Windows.Forms.Button btnImportExcel;
+        private System.Windows.Forms.Button btnReport;
     }
 }

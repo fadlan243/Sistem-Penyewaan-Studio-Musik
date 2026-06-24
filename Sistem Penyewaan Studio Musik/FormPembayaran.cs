@@ -14,7 +14,7 @@ namespace Sistem_Penyewaan_Studio_Musik
 {
     public partial class FormPembayaran : Form
     {
-        private readonly string connString = "Data Source=FADLANNASRIZAL\\FADLAN;Initial Catalog=StudioMusik_DB;Integrated Security=True";
+        private readonly string connString = "Data Source=192.168.1.5,1433;Initial Catalog=StudioMusik_DB;User ID=sa;Password=Masamba24032006;";
 
         private DataTable dtPembayaran;
         private int selectedIdPembayaran = 0;

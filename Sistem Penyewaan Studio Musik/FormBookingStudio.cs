@@ -8,13 +8,12 @@ namespace Sistem_Penyewaan_Studio_Musik
 {
     public partial class FormBookingStudio : Form
     {
-        private readonly string connString = "Data Source=FADLANNASRIZAL\\FADLAN;Initial Catalog=StudioMusik_DB;Integrated Security=True";
+        private readonly string connString = "Data Source=192.168.1.5,1433;Initial Catalog=StudioMusik_DB;User ID=sa;Password=Masamba24032006;";
 
         private int id_pelanggan;
         private string nama_pelanggan;
         private int selectedIdJadwal = 0;
         private int selectedIdBooking = 0;
-        private bool isUpdating = false;
 
         public FormBookingStudio(int id_pelanggan, string nama_pelanggan)
         {
@@ -32,6 +31,14 @@ namespace Sistem_Penyewaan_Studio_Musik
             dtpTanggal.Value = DateTime.Now;
             dtpJamMulai.Value = DateTime.Now.Date.AddHours(10);
             dtpJamSelesai.Value = DateTime.Now.Date.AddHours(12);
+
+            // Menghubungkan secara dinamis event value changed untuk perhitungan real-time
+            dtpJamMulai.ValueChanged += dtpJamMulai_ValueChanged;
+            dtpJamSelesai.ValueChanged += dtpJamSelesai_ValueChanged;
+
+            // Menghubungkan secara dinamis klik tabel DataGridView ke fungsi handler
+            dgvJadwalTersedia.CellClick += dgvJadwalTersedia_CellClick;
+            dgvRiwayatBooking.CellClick += dgvRiwayatBooking_CellClick;
         }
 
         // ==================== LOAD DATA PELANGGAN ====================
@@ -59,7 +66,7 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error LoadDataPelanggan: " + ex.Message);
+                MessageBox.Show("Error LoadDataPelanggan: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -84,11 +91,11 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error LoadStudioCombo: " + ex.Message);
+                MessageBox.Show("Error LoadStudioCombo: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        // ==================== LOAD JADWAL TERSEDIA (UCP 2: PAKAI VIEW) ====================
+        // ==================== LOAD JADWAL TERSEDIA ====================
         private void LoadJadwalTersedia()
         {
             try
@@ -96,7 +103,6 @@ namespace Sistem_Penyewaan_Studio_Musik
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
                     conn.Open();
-                    // ✅ UCP 2: Gunakan VIEW vw_JadwalTersedia
                     string query = @"SELECT id_jadwal, nama_studio, tanggal, jam_mulai, jam_selesai, 
                                             harga_per_jam, durasi_jam AS durasi
                                      FROM vw_JadwalTersedia
@@ -105,12 +111,11 @@ namespace Sistem_Penyewaan_Studio_Musik
                     SqlDataAdapter da = new SqlDataAdapter(query, conn);
                     DataTable dt = new DataTable();
                     da.Fill(dt);
-                    conn.Close();
 
                     dgvJadwalTersedia.DataSource = dt;
                 }
 
-                // Atur header kolom
+                // Pengaturan Header Kolom jika data terisi
                 if (dgvJadwalTersedia.Columns.Count > 0)
                 {
                     if (dgvJadwalTersedia.Columns.Contains("id_jadwal"))
@@ -131,25 +136,14 @@ namespace Sistem_Penyewaan_Studio_Musik
                     if (dgvJadwalTersedia.Columns.Contains("durasi"))
                         dgvJadwalTersedia.Columns["durasi"].HeaderText = "Durasi (Jam)";
                 }
-
-                // Tambah kolom button Booking
-                if (dgvJadwalTersedia.Columns["btnBooking"] == null)
-                {
-                    DataGridViewButtonColumn btnBooking = new DataGridViewButtonColumn();
-                    btnBooking.Name = "btnBooking";
-                    btnBooking.HeaderText = "Aksi";
-                    btnBooking.Text = "📅 Booking";
-                    btnBooking.UseColumnTextForButtonValue = true;
-                    dgvJadwalTersedia.Columns.Add(btnBooking);
-                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error LoadJadwalTersedia: " + ex.Message);
+                MessageBox.Show("Error LoadJadwalTersedia: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        // ==================== LOAD RIWAYAT BOOKING (UCP 2: PAKAI VIEW & SP) ====================
+        // ==================== LOAD RIWAYAT BOOKING ====================
         private void LoadRiwayatBooking()
         {
             try
@@ -157,7 +151,6 @@ namespace Sistem_Penyewaan_Studio_Musik
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
                     conn.Open();
-                    // ✅ UCP 2: Gunakan Stored Procedure sp_SearchRiwayatBooking
                     SqlCommand cmd = new SqlCommand("sp_SearchRiwayatBooking", conn);
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@id_pelanggan", id_pelanggan);
@@ -166,12 +159,11 @@ namespace Sistem_Penyewaan_Studio_Musik
                     SqlDataAdapter da = new SqlDataAdapter(cmd);
                     DataTable dt = new DataTable();
                     da.Fill(dt);
-                    conn.Close();
 
                     dgvRiwayatBooking.DataSource = dt;
                 }
 
-                // Atur header kolom
+                // Pengaturan Header Kolom jika data terisi
                 if (dgvRiwayatBooking.Columns.Count > 0)
                 {
                     if (dgvRiwayatBooking.Columns.Contains("id_booking"))
@@ -193,25 +185,14 @@ namespace Sistem_Penyewaan_Studio_Musik
                     if (dgvRiwayatBooking.Columns.Contains("status"))
                         dgvRiwayatBooking.Columns["status"].HeaderText = "Status";
                 }
-
-                // Tambah kolom button Batalkan
-                if (dgvRiwayatBooking.Columns["btnBatalkan"] == null)
-                {
-                    DataGridViewButtonColumn btnBatalkan = new DataGridViewButtonColumn();
-                    btnBatalkan.Name = "btnBatalkan";
-                    btnBatalkan.HeaderText = "Aksi";
-                    btnBatalkan.Text = "❌ Batalkan";
-                    btnBatalkan.UseColumnTextForButtonValue = true;
-                    dgvRiwayatBooking.Columns.Add(btnBatalkan);
-                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error LoadRiwayatBooking: " + ex.Message);
+                MessageBox.Show("Error LoadRiwayatBooking: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        // ==================== LOAD DETAIL JADWAL ====================
+        // ==================== LOAD DETAIL JADWAL KETIKA BARIS DIKLIK ====================
         private void LoadDetailJadwal(int id_jadwal)
         {
             try
@@ -251,16 +232,16 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error LoadDetailJadwal: " + ex.Message);
+                MessageBox.Show("Error LoadDetailJadwal: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        // ==================== UCP 2: MEMBUAT BOOKING PAKAI SP ====================
+        // ==================== MEMBUAT BOOKING ====================
         private void BuatBooking()
         {
             if (selectedIdJadwal == 0)
             {
-                MessageBox.Show("Pilih jadwal terlebih dahulu!", "Peringatan",
+                MessageBox.Show("Pilih jadwal terlebih dahulu dari tabel Daftar Jadwal Tersedia!", "Peringatan",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -272,8 +253,6 @@ namespace Sistem_Penyewaan_Studio_Musik
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
                     conn.Open();
-
-                    // ✅ UCP 2: Gunakan Stored Procedure sp_InsertBooking
                     SqlCommand cmd = new SqlCommand("sp_InsertBooking", conn);
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@id_pelanggan", id_pelanggan);
@@ -302,17 +281,15 @@ namespace Sistem_Penyewaan_Studio_Musik
                         LoadJadwalTersedia();
                         LoadRiwayatBooking();
                     }
-                    conn.Close();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error BuatBooking: " + ex.Message, "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error BuatBooking: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        // ==================== UCP 2: MEMBATALKAN BOOKING PAKAI SP ====================
+        // ==================== MEMBATALKAN BOOKING ====================
         private void BatalkanBooking(int id_booking)
         {
             try
@@ -320,8 +297,6 @@ namespace Sistem_Penyewaan_Studio_Musik
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
                     conn.Open();
-
-                    // ✅ UCP 2: Gunakan Stored Procedure sp_CancelBooking
                     SqlCommand cmd = new SqlCommand("sp_CancelBooking", conn);
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@id_booking", id_booking);
@@ -342,19 +317,17 @@ namespace Sistem_Penyewaan_Studio_Musik
                         LoadJadwalTersedia();
                         LoadRiwayatBooking();
                         ClearDetailJadwal();
-                        selectedIdJadwal = 0;
+                        selectedIdBooking = 0;
                     }
-                    conn.Close();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error BatalkanBooking: " + ex.Message, "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error BatalkanBooking: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        // ==================== CLEAR DETAIL JADWAL ====================
+        // ==================== CLEAR FORM DETAIL ====================
         private void ClearDetailJadwal()
         {
             cbStudio.SelectedIndex = -1;
@@ -367,7 +340,7 @@ namespace Sistem_Penyewaan_Studio_Musik
             txtCatatan.Text = "";
         }
 
-        // ==================== REFRESH SEMUA DATA ====================
+        // ==================== REFRESH ALL DATA ====================
         private void RefreshAll()
         {
             LoadJadwalTersedia();
@@ -375,12 +348,12 @@ namespace Sistem_Penyewaan_Studio_Musik
             LoadDataPelanggan();
             ClearDetailJadwal();
             selectedIdJadwal = 0;
+            selectedIdBooking = 0;
             txtCatatan.Clear();
-            MessageBox.Show("Data berhasil direfresh!", "Info",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Data berhasil direfresh!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        // ==================== HITUNG DURASI ====================
+        // ==================== CALCULATE DURATION & PRICE ====================
         private void HitungDurasi()
         {
             try
@@ -407,7 +380,6 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
-        // ==================== HITUNG TOTAL HARGA ====================
         private void HitungTotalHarga()
         {
             try
@@ -434,8 +406,36 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
-        // ==================== EVENT HANDLERS ====================
-        private void FormBookingStudio_Load(object sender, EventArgs e) { }
+        // ==================== GRID & COMPONENT EVENT HANDLERS ====================
+        private void dgvJadwalTersedia_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                selectedIdJadwal = Convert.ToInt32(dgvJadwalTersedia.Rows[e.RowIndex].Cells["id_jadwal"].Value);
+                LoadDetailJadwal(selectedIdJadwal);
+            }
+        }
+
+        private void dgvRiwayatBooking_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                selectedIdBooking = Convert.ToInt32(dgvRiwayatBooking.Rows[e.RowIndex].Cells["id_booking"].Value);
+                dgvRiwayatBooking.Rows[e.RowIndex].Selected = true;
+            }
+        }
+
+        private void dtpJamMulai_ValueChanged(object sender, EventArgs e)
+        {
+            HitungDurasi();
+            HitungTotalHarga();
+        }
+
+        private void dtpJamSelesai_ValueChanged(object sender, EventArgs e)
+        {
+            HitungDurasi();
+            HitungTotalHarga();
+        }
 
         private void btnCariJadwal_Click(object sender, EventArgs e)
         {
@@ -457,22 +457,18 @@ namespace Sistem_Penyewaan_Studio_Musik
             selectedIdJadwal = 0;
             txtCatatan.Clear();
             ClearDetailJadwal();
-            MessageBox.Show("Proses booking dibatalkan.", "Info",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Proses booking dibatalkan.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btnBatalkanPesanan_Click(object sender, EventArgs e)
         {
             if (selectedIdBooking == 0)
             {
-                MessageBox.Show("Pilih booking yang akan dibatalkan dari daftar riwayat!",
-                    "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Pilih booking terlebih dahulu dari daftar riwayat di bawah!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            DialogResult result = MessageBox.Show("Yakin ingin membatalkan booking ini?",
-                "Konfirmasi Pembatalan", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
+            DialogResult result = MessageBox.Show("Yakin ingin membatalkan booking ini?", "Konfirmasi Pembatalan", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result == DialogResult.Yes)
             {
                 BatalkanBooking(selectedIdBooking);
@@ -484,6 +480,6 @@ namespace Sistem_Penyewaan_Studio_Musik
             RefreshAll();
         }
 
-        
+        private void FormBookingStudio_Load(object sender, EventArgs e) { }
     }
 }

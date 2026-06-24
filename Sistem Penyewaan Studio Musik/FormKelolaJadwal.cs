@@ -312,7 +312,7 @@ namespace Sistem_Penyewaan_Studio_Musik
         private void btnTutup_Click(object sender, EventArgs e) { this.Close(); }
 
         // Event kosong dari Designer
-        private void label7_Click(object sender, EventArgs e) { }
+        private void label7_Click(object sender, EventArgs e) { } 
         private void dtpJamMulai_ValueChanged(object sender, EventArgs e) { }
         private void lblJudul_Click(object sender, EventArgs e) { }
         private void lblDaftarJadwal_Click(object sender, EventArgs e) { }
