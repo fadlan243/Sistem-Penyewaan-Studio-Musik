@@ -63,6 +63,18 @@ namespace Sistem_Penyewaan_Studio_Musik
             // Biarkan kosong
         }
 
-        
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Memaksa Crystal Report Viewer untuk menggambar dan memuat ulang data
+                crystalReportViewer1.RefreshReport();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error saat refresh laporan: " + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }
