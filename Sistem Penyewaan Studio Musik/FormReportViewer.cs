@@ -44,5 +44,75 @@ namespace Sistem_Penyewaan_Studio_Musik
             LoadChart();
         }
 
+        // ==================== CHART ====================
+        private void LoadChart()
+        {
+            try
+            {
+                string jenis = cmbJenisLaporan.SelectedItem.ToString();
+                DataTable dt = GetData(jenis);
+
+                if (dt.Rows.Count == 0)
+                {
+                    MessageBox.Show("Tidak ada data untuk periode ini!", "Info",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    chart1.Series.Clear();
+                    return;
+                }
+
+                // Bersihkan chart
+                chart1.Series.Clear();
+                chart1.ChartAreas.Clear();
+
+                // Buat Chart Area
+                ChartArea area = new ChartArea("MainArea");
+                area.AxisX.Title = "Kategori";
+                area.AxisY.Title = "Jumlah";
+                chart1.ChartAreas.Add(area);
+
+                // Buat Series
+                Series series = new Series();
+                series.ChartType = cmbTipeChart.SelectedIndex == 0 ?
+                    SeriesChartType.Column : SeriesChartType.Pie;
+                series.Name = jenis;
+
+                // Isi data
+                foreach (DataRow row in dt.Rows)
+                {
+                    string label = row[0].ToString();
+                    double value = Convert.ToDouble(row[1]);
+
+                    DataPoint point = series.Points.Add(value);
+                    point.AxisLabel = label;
+                    point.Label = value.ToString("N0");
+                    point.LabelForeColor = Color.White;
+
+                    // Untuk Pie Chart, tampilkan label lebih detail
+                    if (cmbTipeChart.SelectedIndex == 1)
+                    {
+                        point.Label = $"{label}\n{value:N0}";
+                    }
+                }
+
+                chart1.Series.Add(series);
+
+                // Set judul
+                chart1.Titles.Clear();
+                Title title = new Title();
+                title.Text = $"{jenis} - {dtpMulai.Value:dd/MM/yyyy} s/d {dtpSelesai.Value:dd/MM/yyyy}";
+                title.Font = new Font("Segoe UI", 12, FontStyle.Bold);
+                title.ForeColor = Color.FromArgb(230, 57, 70);
+                chart1.Titles.Add(title);
+
+                chart1.Invalidate();
+                chart1.Update();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error LoadChart: " + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
     }
 }
