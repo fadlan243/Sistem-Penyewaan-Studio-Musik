@@ -114,5 +114,71 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
+        // ==================== AMBIL DATA DARI DATABASE ====================
+        private DataTable GetData(string jenis)
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                conn.Open();
+
+                if (jenis.Contains("Booking"))
+                {
+                    string query = @"SELECT 
+                                        s.nama_studio AS 'Studio',
+                                        COUNT(b.id_booking) AS 'Total'
+                                    FROM tbl_booking b
+                                    JOIN tbl_jadwal j ON b.id_jadwal = j.id_jadwal
+                                    JOIN tbl_studio s ON j.id_studio = s.id_studio
+                                    WHERE CAST(b.tanggal_booking AS DATE) BETWEEN @mulai AND @selesai
+                                    GROUP BY s.nama_studio
+                                    ORDER BY COUNT(b.id_booking) DESC";
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@mulai", dtpMulai.Value.Date);
+                    cmd.Parameters.AddWithValue("@selesai", dtpSelesai.Value.Date);
+                    SqlDataAdapter da = new SqlDataAdapter(cmd);
+                    da.Fill(dt);
+                }
+                else if (jenis.Contains("Pendapatan"))
+                {
+                    string query = @"SELECT 
+                                        s.nama_studio AS 'Studio',
+                                        SUM(b.total_harga) AS 'Total'
+                                    FROM tbl_booking b
+                                    JOIN tbl_jadwal j ON b.id_jadwal = j.id_jadwal
+                                    JOIN tbl_studio s ON j.id_studio = s.id_studio
+                                    WHERE b.status IN ('selesai', 'disetujui')
+                                    AND CAST(b.tanggal_booking AS DATE) BETWEEN @mulai AND @selesai
+                                    GROUP BY s.nama_studio
+                                    ORDER BY SUM(b.total_harga) DESC";
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@mulai", dtpMulai.Value.Date);
+                    cmd.Parameters.AddWithValue("@selesai", dtpSelesai.Value.Date);
+                    SqlDataAdapter da = new SqlDataAdapter(cmd);
+                    da.Fill(dt);
+                }
+                else if (jenis.Contains("Pelanggan"))
+                {
+                    string query = @"SELECT TOP 10
+                                        p.Nama AS 'Pelanggan',
+                                        COUNT(b.id_booking) AS 'Total'
+                                    FROM tbl_booking b
+                                    JOIN pelanggan p ON b.id_pelanggan = p.id_pelanggan
+                                    WHERE b.status IN ('selesai', 'disetujui')
+                                    AND CAST(b.tanggal_booking AS DATE) BETWEEN @mulai AND @selesai
+                                    GROUP BY p.Nama
+                                    ORDER BY COUNT(b.id_booking) DESC";
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@mulai", dtpMulai.Value.Date);
+                    cmd.Parameters.AddWithValue("@selesai", dtpSelesai.Value.Date);
+                    SqlDataAdapter da = new SqlDataAdapter(cmd);
+                    da.Fill(dt);
+                }
+            }
+
+            return dt;
+        }
+
     }
 }
