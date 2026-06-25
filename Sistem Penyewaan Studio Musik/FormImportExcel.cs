@@ -25,5 +25,25 @@ namespace Sistem_Penyewaan_Studio_Musik
             btnImport.BackColor = System.Drawing.Color.Gray;
         }
 
+        // ==================== BROWSE FILE EXCEL ====================
+        private void btnBrowse_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Excel Files|*.xlsx;*.xls";
+                ofd.Title = "Pilih File Excel Studio";
+                ofd.FilterIndex = 1;
+                ofd.RestoreDirectory = true;
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    selectedFilePath = ofd.FileName;
+                    txtFilePath.Text = selectedFilePath;
+                    PreviewExcel();
+                }
+            }
+        }
+
+        
     }
 }
