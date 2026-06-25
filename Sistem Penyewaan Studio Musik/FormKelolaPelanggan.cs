@@ -14,7 +14,7 @@ namespace Sistem_Penyewaan_Studio_Musik
 {
     public partial class FormKelolaPelanggan : Form
     {
-        private readonly SqlConnection conn = new SqlConnection("Data Source=FADLANNASRIZAL\\FADLAN;Initial Catalog=StudioMusik_DB;Integrated Security=True");
+        private readonly SqlConnection conn = new SqlConnection("Data Source=192.168.110.121,1433;Initial Catalog=StudioMusik_DB;User ID=sa;Password=Masamba24032006;");
 
         private DataTable dtUser;
         private int selectedIdUser = 0;

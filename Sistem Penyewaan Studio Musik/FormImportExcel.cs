@@ -9,7 +9,7 @@ namespace Sistem_Penyewaan_Studio_Musik
 {
     public partial class FormImportExcel : Form
     {
-        string connString = "Data Source=192.168.1.5,1433;Initial Catalog=StudioMusik_DB;User ID=sa;Password=Masamba24032006;";
+        string connString = ("Data Source=192.168.110.121,1433;Initial Catalog=StudioMusik_DB;User ID=sa;Password=Masamba24032006;");
         private DataTable dtPreview = new DataTable();
         private string selectedFilePath = "";
 

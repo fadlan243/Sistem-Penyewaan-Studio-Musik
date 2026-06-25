@@ -1532,3 +1532,253 @@ BEGIN
     END CATCH
 END;
 GO
+
+
+CREATE TRIGGER trg_CekJadwalBentrok
+ON tbl_booking
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Jika ada jadwal yang sama, di studio yang sama, pada tanggal yang sama dimasukkan lagi
+    IF EXISTS (
+        SELECT 1 
+        FROM tbl_booking b
+        JOIN inserted i ON b.id_jadwal = i.id_jadwal 
+        WHERE b.id_booking <> i.id_booking 
+          AND b.tanggal_booking = i.tanggal_booking
+          AND b.status IN ('disetujui', 'selesai')
+    )
+    BEGIN
+        RAISERROR ('Maaf, jadwal studio pada tanggal tersebut sudah dibooking orang lain!', 16, 1);
+        ROLLBACK TRANSACTION;
+    END
+END;
+
+
+CREATE PROCEDURE sp_InsertBooking
+    @id_pelanggan INT,
+    @id_jadwal INT,
+    @tanggal_booking DATE,
+    @durasi_jam INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @harga_per_jam DECIMAL(18,2);
+    DECLARE @total_harga DECIMAL(18,2);
+
+    -- 1. Ambil harga studio berdasarkan jadwal yang dipilih
+    SELECT @harga_per_jam = s.harga_per_jam 
+    FROM tbl_jadwal j
+    JOIN tbl_studio s ON j.id_studio = s.id_studio
+    WHERE j.id_jadwal = @id_jadwal;
+
+    -- 2. Hitung total harga otomatis
+    SET @total_harga = @harga_per_jam * @durasi_jam;
+
+    -- 3. Insert ke tbl_booking
+    INSERT INTO tbl_booking (id_pelanggan, id_jadwal, tanggal_booking, total_harga, status)
+    VALUES (@id_pelanggan, @id_jadwal, @tanggal_booking, @total_harga, 'disetujui');
+    
+    -- Mengembalikan nilai untuk konfirmasi di backend C#
+    SELECT SCOPE_IDENTITY() AS NewBookingID, @total_harga AS TotalHarga;
+END;
+
+
+CREATE TRIGGER trg_CekJadwalBentrok
+ON tbl_booking
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF EXISTS (
+        SELECT 1 
+        FROM tbl_booking b
+        JOIN inserted i ON b.id_jadwal = i.id_jadwal 
+        WHERE b.id_booking <> i.id_booking 
+          AND b.tanggal_booking = i.tanggal_booking
+          AND b.status IN ('disetujui', 'selesai')
+    )
+    BEGIN
+        RAISERROR ('Maaf, jadwal studio pada tanggal tersebut sudah dibooking orang lain!', 16, 1);
+        ROLLBACK TRANSACTION;
+    END
+END;
+
+CREATE PROCEDURE sp_InsertBooking
+    @id_pelanggan INT,
+    @id_jadwal INT,
+    @tanggal_booking DATE,
+    @durasi_jam INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @harga_per_jam DECIMAL(18,2);
+    DECLARE @total_harga DECIMAL(18,2);
+
+    -- Ambil harga studio berdasarkan jadwal yang dipilih
+    SELECT @harga_per_jam = s.harga_per_jam 
+    FROM tbl_jadwal j
+    JOIN tbl_studio s ON j.id_studio = s.id_studio
+    WHERE j.id_jadwal = @id_jadwal;
+
+    -- Hitung total harga otomatis
+    SET @total_harga = @harga_per_jam * @durasi_jam;
+
+    -- Simpan data booking
+    INSERT INTO tbl_booking (id_pelanggan, id_jadwal, tanggal_booking, total_harga, status)
+    VALUES (@id_pelanggan, @id_jadwal, @tanggal_booking, @total_harga, 'disetujui');
+    
+    -- Kembalikan nilai total harga untuk ditangkap di VS C#
+    SELECT SCOPE_IDENTITY() AS NewBookingID, @total_harga AS TotalHarga;
+END;
+
+
+
+
+CREATE TRIGGER trg_OtomatisUpdateStatusJadwal
+ON tbl_booking
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Cek jika status diubah dari yang lain menjadi 'disetujui'
+    IF EXISTS (
+        SELECT 1 
+        FROM inserted i
+        JOIN deleted d ON i.id_booking = d.id_booking
+        WHERE i.status = 'disetujui' AND d.status <> 'disetujui'
+    )
+    BEGIN
+        -- Otomatis ubah status di tbl_jadwal menjadi 'dipesan'
+        UPDATE j
+        SET j.status = 'dipesan'
+        FROM tbl_jadwal j
+        JOIN inserted i ON j.id_jadwal = i.id_jadwal
+        WHERE i.status = 'disetujui';
+    END
+END;
+
+
+CREATE PROCEDURE sp_InsertBookingUser
+    @id_pelanggan INT,
+    @id_jadwal INT,
+    @tanggal_booking DATE,
+    @durasi_jam INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @harga_per_jam DECIMAL(18,2);
+    DECLARE @total_harga DECIMAL(18,2);
+
+    -- Ambil harga studio secara internal di database
+    SELECT @harga_per_jam = s.harga_per_jam 
+    FROM tbl_jadwal j
+    JOIN tbl_studio s ON j.id_studio = s.id_studio
+    WHERE j.id_jadwal = @id_jadwal;
+
+    -- Hitung total harga otomatis
+    SET @total_harga = @harga_per_jam * @durasi_jam;
+
+    -- Simpan dengan status awal 'menunggu' (karena butuh approval admin di riwayat)
+    INSERT INTO tbl_booking (id_pelanggan, id_jadwal, tanggal_booking, total_harga, status)
+    VALUES (@id_pelanggan, @id_jadwal, @tanggal_booking, @total_harga, 'menunggu');
+
+    SELECT SCOPE_IDENTITY() AS NewBookingID, @total_harga AS TotalHarga;
+END;
+
+
+CREATE VIEW vw_JadwalTersedia AS
+SELECT 
+    j.id_jadwal, 
+    s.nama_studio, 
+    j.tanggal, 
+    j.jam_mulai, 
+    j.jam_selesai, 
+    s.harga_per_jam,
+    CAST(DATEDIFF(MINUTE, j.jam_mulai, j.jam_selesai) / 60.0 AS DECIMAL(5,1)) AS durasi_jam
+FROM tbl_jadwal j
+JOIN tbl_studio s ON j.id_studio = s.id_studio
+WHERE s.status = 'aktif' AND j.tanggal >= CAST(GETDATE() AS DATE);
+
+
+CREATE PROCEDURE sp_InsertBooking
+    @id_pelanggan INT,
+    @id_jadwal INT,
+    @catatan VARCHAR(255),
+    @new_id INT OUTPUT,
+    @pesan VARCHAR(255) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    -- Validasi apakah jadwal sudah dibooking orang lain yang statusnya sukses/pending
+    IF EXISTS (SELECT 1 FROM tbl_booking WHERE id_jadwal = @id_jadwal AND status != 'batal')
+    BEGIN
+        SET @new_id = 0;
+        SET @pesan = 'GAGAL: Jadwal ini sudah dibooking oleh pelanggan lain!';
+        RETURN;
+    END
+
+    -- Jika aman, lakukan insert
+    INSERT INTO tbl_booking (id_pelanggan, id_jadwal, tanggal_booking, catatan, status)
+    VALUES (@id_pelanggan, @id_jadwal, GETDATE(), @catatan, 'Sukses');
+
+    SET @new_id = SCOPE_IDENTITY();
+    SET @pesan = 'SUKSES: Booking studio berhasil dibuat!';
+END;
+
+
+
+
+
+CREATE PROCEDURE sp_CancelBooking
+    @id_booking INT,
+    @id_pelanggan INT,
+    @pesan VARCHAR(255) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Cek apakah booking emang punya pelanggan tersebut dan belum batal
+    IF EXISTS (SELECT 1 FROM tbl_booking WHERE id_booking = @id_booking AND id_pelanggan = @id_pelanggan AND status = 'Sukses')
+    BEGIN
+        UPDATE tbl_booking
+        SET status = 'Batal'
+        WHERE id_booking = @id_booking;
+
+        SET @pesan = 'SUKSES: Booking berhasil dibatalkan!';
+    END
+    ELSE
+    BEGIN
+        SET @pesan = 'GAGAL: Data tidak ditemukan atau sudah dibatalkan sebelumnya.';
+    END
+END;
+
+
+
+
+CREATE PROCEDURE sp_SearchRiwayatBooking
+    @id_pelanggan INT,
+    @status VARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        b.id_booking,
+        b.tanggal_booking,
+        s.nama_studio,
+        DATEDIFF(MINUTE, j.jam_mulai, j.jam_selesai) / 60 AS durasi_jam,
+        (DATEDIFF(MINUTE, j.jam_mulai, j.jam_selesai) / 60) * s.harga_per_jam AS total_harga,
+        b.status
+    FROM tbl_booking b
+    JOIN tbl_jadwal j ON b.id_jadwal = j.id_jadwal
+    JOIN tbl_studio s ON j.id_studio = s.id_studio
+    WHERE b.id_pelanggan = @id_pelanggan
+      AND (@status = 'semua' OR b.status = @status)
+    ORDER BY b.tanggal_booking DESC;
+END;
