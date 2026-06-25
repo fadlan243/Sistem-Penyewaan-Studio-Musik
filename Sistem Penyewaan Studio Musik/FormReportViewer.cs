@@ -16,5 +16,28 @@ namespace Sistem_Penyewaan_Studio_Musik
             InitializeComponent();
         }
 
+        private void FormReportViewer_Load(object sender, EventArgs e)
+        {
+            // Default tanggal
+            dtpMulai.Value = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            dtpSelesai.Value = DateTime.Now;
+
+            // Isi ComboBox Laporan
+            cmbJenisLaporan.Items.Clear();
+            cmbJenisLaporan.Items.Add("📊 Laporan Booking");
+            cmbJenisLaporan.Items.Add("💰 Laporan Pendapatan");
+            cmbJenisLaporan.Items.Add("👤 Laporan Pelanggan");
+            cmbJenisLaporan.SelectedIndex = 0;
+
+            // Isi ComboBox Tipe Chart
+            cmbTipeChart.Items.Clear();
+            cmbTipeChart.Items.Add("📊 Bar Chart");
+            cmbTipeChart.Items.Add("🥧 Pie Chart");
+            cmbTipeChart.SelectedIndex = 0;
+
+            LoadChart();
+        }
+
+        
     }
 }
