@@ -261,5 +261,11 @@ namespace Sistem_Penyewaan_Studio_Musik
             form.ShowDialog();
         }
 
+        // ==================== TOMBOL TUTUP ====================
+        private void btnTutup_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
     }
 }
