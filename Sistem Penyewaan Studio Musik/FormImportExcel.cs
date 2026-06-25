@@ -18,5 +18,12 @@ namespace Sistem_Penyewaan_Studio_Musik
             InitializeComponent();
         }
 
+        // ==================== LOAD FORM ====================
+        private void FormImportExcel_Load(object sender, EventArgs e)
+        {
+            btnImport.Enabled = false;
+            btnImport.BackColor = System.Drawing.Color.Gray;
+        }
+
     }
 }
