@@ -231,5 +231,10 @@ namespace Sistem_Penyewaan_Studio_Musik
             this.Close();
         }
 
+        // ==================== EVENT LAINNYA (TIDAK DIGUNAKAN) ====================
+        private void label1_Click(object sender, EventArgs e) { }
+        private void txtFilePath_TextChanged(object sender, EventArgs e) { }
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
+        private void lblRowCount_Click(object sender, EventArgs e) { }
     }
 }
