@@ -38,6 +38,11 @@ namespace Sistem_Penyewaan_Studio_Musik
             LoadChart();
         }
 
-        
+        // ==================== TOMBOL TAMPILKAN ====================
+        private void btnTampilkan_Click(object sender, EventArgs e)
+        {
+            LoadChart();
+        }
+
     }
 }
