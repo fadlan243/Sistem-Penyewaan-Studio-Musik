@@ -129,7 +129,9 @@
     <Compile Include="FormBookingStudio.Designer.cs">
       <DependentUpon>FormBookingStudio.cs</DependentUpon>
     </Compile>
-    <Compile Include="FORMCRYSTALREPORTVIEWER.cs" />
+    <Compile Include="FORMCRYSTALREPORTVIEWER.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FORMCRYSTALREPORTVIEWER.Designer.cs">
       <DependentUpon>FORMCRYSTALREPORTVIEWER.cs</DependentUpon>
     </Compile>
