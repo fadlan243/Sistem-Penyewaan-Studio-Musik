@@ -58,6 +58,11 @@ namespace Sistem_Penyewaan_Studio_Musik
             this.Close();
         }
 
+        private void FORMCRYSTALREPORTVIEWER_Load(object sender, EventArgs e)
+        {
+            // Biarkan kosong
+        }
+
         
     }
 }
