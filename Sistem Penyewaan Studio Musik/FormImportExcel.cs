@@ -13,6 +13,10 @@ namespace Sistem_Penyewaan_Studio_Musik
         private DataTable dtPreview = new DataTable();
         private string selectedFilePath = "";
 
-        
+        public FormImportExcel()
+        {
+            InitializeComponent();
+        }
+
     }
 }
