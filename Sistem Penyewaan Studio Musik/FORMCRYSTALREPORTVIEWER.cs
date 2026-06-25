@@ -53,6 +53,11 @@ namespace Sistem_Penyewaan_Studio_Musik
         }
 
         // Tombol Tutup
+        private void btnTutup_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
         
     }
 }
