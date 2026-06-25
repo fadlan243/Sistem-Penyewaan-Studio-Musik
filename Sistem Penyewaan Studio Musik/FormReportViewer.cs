@@ -210,5 +210,56 @@ namespace Sistem_Penyewaan_Studio_Musik
             }
         }
 
+        // ==================== LIHAT REPORT (Crystal Report) ====================
+        private void btnLihatReport_Click(object sender, EventArgs e)
+        {
+            if (cmbJenisLaporan.SelectedItem == null)
+            {
+                MessageBox.Show("Pilih jenis laporan terlebih dahulu!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string jenis = cmbJenisLaporan.SelectedItem.ToString();
+            string reportName = "";
+            string tableName = "";
+            string judul = "";
+
+            if (jenis.Contains("Booking"))
+            {
+                reportName = "LaporanBooking.rpt";
+                tableName = "dtBooking";
+                judul = "Laporan Booking";
+            }
+            else if (jenis.Contains("Pendapatan"))
+            {
+                reportName = "LaporanPendapatan.rpt";
+                tableName = "dtPendapatan";
+                judul = "Laporan Pendapatan";
+            }
+            else if (jenis.Contains("Pelanggan"))
+            {
+                reportName = "LaporanPelanggan.rpt";
+                tableName = "dtPelanggan";
+                judul = "Laporan Pelanggan";
+            }
+
+            // Gabungkan folder aplikasi dengan nama file secara bersih
+            string fullReportPath = System.IO.Path.Combine(Application.StartupPath, reportName);
+
+            // Cek langsung ke lokasi apakah filenya beneran ada
+            if (!System.IO.File.Exists(fullReportPath))
+            {
+                MessageBox.Show("File report tidak ditemukan!\n" + fullReportPath,
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            DataTable dt = GetData(jenis);
+
+            // KODE BARU (Sesuaikan dengan nama variabel DataTable hasil query database kamu)
+            FORMCRYSTALREPORTVIEWER form = new FORMCRYSTALREPORTVIEWER(fullReportPath, tableName, judul, dt);
+            form.ShowDialog();
+        }
+
     }
 }
