@@ -180,5 +180,35 @@ namespace Sistem_Penyewaan_Studio_Musik
             return dt;
         }
 
+        // ==================== EXPORT CHART KE PNG ====================
+        private void btnExport_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (chart1.Series.Count == 0)
+                {
+                    MessageBox.Show("Tidak ada chart untuk diexport!", "Info",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.Filter = "PNG Image|*.png";
+                sfd.FileName = $"Laporan_Chart_{DateTime.Now:yyyyMMdd_HHmmss}.png";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    chart1.SaveImage(sfd.FileName, ChartImageFormat.Png);
+                    MessageBox.Show($"✅ Chart berhasil diexport!\n📁 {sfd.FileName}", "Sukses",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error Export Chart: " + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
     }
 }
